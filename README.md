@@ -63,3 +63,8 @@ board = Arduino('/dev/tty.usbmodem14201')  # Remplacez par votre port
 ```
 
 ---
+
+## Libraries uploaded on Arduino UNO R4 WiFi
+
+- Firmata (tuto upload [ici](https://roboticsbackend.com/arduino-standard-firmata-tutorial/))
+   - Problème dans `Boards.h` --> ajouter le bloc de définiton de la cart UNO R4 WiFi (bloc ici ligne 457 à 475 : https://github.com/firmata/arduino/blob/main/Boards.h#L457)
