@@ -68,3 +68,41 @@ board = Arduino('/dev/tty.usbmodem14201')  # Remplacez par votre port
 
 - Firmata (tuto upload [ici](https://roboticsbackend.com/arduino-standard-firmata-tutorial/))
    - Problème dans `Boards.h` --> ajouter le bloc de définiton de la cart UNO R4 WiFi (bloc ici ligne 457 à 475 : https://github.com/firmata/arduino/blob/main/Boards.h#L457)
+
+
+## Train 
+Recepteur est sur le 1.
+
+# Connexion filaire
+
+Relai 1 connecté à l'output 13 de l'arduino et le + de la batterie.
+Relai 2 connecté à l'output 12 de l'arduino et le - de la batterie.
+
+| Fil          | Input       | Output      | 
+| ------------ | ----------- | ----------- |
+| Rouge        | Arduino 5 V | + Relai 1   |
+| Orange       | + Relai 1   | + Relai 2   |
+| Noir         | GND Arduino | - Relai 1   |
+| Gris         | - Relai 1   | - Relai 2   |
+| Cyan         | Arduino D13 | S relai 1   |
+| Bleu         | Arduino D12 | S relai 2   |
+| Violet       | + Batterie  | COM Relai 1 |
+| Rose         | - Batterie  | COM Relai 2 |
+| Marron foncé | NC Relai 1  | Moteur +    |
+| Marron clair | NO Relai 1  | Moteur -    |
+| Vert         | NC Relai 2  | Moteur +    |
+| Jaune        | NO Relai 2  | Moteur -    |
+
+| Arduino Output  | Relai 1 | Relai 2 | 
+| --------------- | ------- | ------- |
+| 13       | 12   | NC | NO | NC | NO |
+| -------- | ---- | -- | -- | -- | -- |
+| 1        | 0    | 0  | 1  | 1  | 0  |
+| 0        | 1    | 1  | 0  | 0  | 1  |
+
+
+
+
+
+
+
