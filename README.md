@@ -63,6 +63,10 @@ board = Arduino('/dev/tty.usbmodem14201')  # Remplacez par votre port
 ```
 
 ---
+## Installation board Arduino R4 Wifi
+
+Après avoir installé l'IDE Arduino ---> installer depuis le "board manager" la carte Arduino R4 Wifi
+
 
 ## Libraries uploaded on Arduino UNO R4 WiFi
 
