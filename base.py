@@ -30,8 +30,9 @@ def disconnect_from_arduino(board):
 
 
 def init_relay_output(board, relays):
-    """Initialise les relayis du arduino"""
+    """Initialise les relays du arduino"""
     # Configurer les broches comme sorties
     for relay in relays:
-        board.digital[relay].mode = 1
-        board.digital[relay].write(0)
+        for output in relay:
+            board.digital[output].mode = 1
+            board.digital[output].write(0)
