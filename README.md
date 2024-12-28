@@ -32,7 +32,7 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
 
 1. Lancez le script Python :
 ```bash
-python3 control.py
+python3 main.py
 ```
 
 2. Appuyez sur les touches définies pour contrôler les fonctionnalités.
