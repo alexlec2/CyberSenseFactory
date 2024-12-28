@@ -19,8 +19,10 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
 
 ## Installation
 
-1. Installez les dépendances python en exécutant la commande suivante dans votre terminal :
+1. Installez les dépendances python dans un virtual environment en exécutant les commandes suivantes dans votre terminal :
    ```bash
+   python3 -m venv ./venv
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
 
