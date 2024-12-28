@@ -10,16 +10,16 @@ def on_press(key):
 
     try:
         if key.char == "a":  # Active le relais 13
-            activate_relay(board, relays[0][0], last_activated_relay_1)
+            activate_relay(board, relays[0][0], last_activated_relay_1, time_sleep)
             last_activated_relay_1 = relays[0][0]
         elif key.char == "z":  # Active le relais 12
-            activate_relay(board, relays[0][1], last_activated_relay_1)
+            activate_relay(board, relays[0][1], last_activated_relay_1, time_sleep)
             last_activated_relay_1 = relays[0][1]
         elif key.char == "o":  # Active le relais 12
-            activate_relay(board, relays[1][0], last_activated_relay_2)
+            activate_relay(board, relays[1][0], last_activated_relay_2, time_sleep)
             last_activated_relay_2 = relays[1][0]
         elif key.char == "p":  # Active le relais 12
-            activate_relay(board, relays[1][1], last_activated_relay_2)
+            activate_relay(board, relays[1][1], last_activated_relay_2, time_sleep)
             last_activated_relay_2 = relays[1][1]
         elif key.char == "q":  # Quitter avec 'Q'
             print("Programme terminé.\n")
@@ -29,6 +29,7 @@ def on_press(key):
 
 # Initialisation
 board = None
+time_sleep = 0.5 # Time that relay will be activated, value in second 
 relays = [[13, 12], [8, 7]] # Duo de d'input pour les relays
 last_activated_relay_1 = relays[0][0]  # Variable pour suivre le dernier relais activé entre le 13 et le 12
 last_activated_relay_2 = relays[1][0]  # Variable pour suivre le dernier relais activé entre le 8 et le 7
