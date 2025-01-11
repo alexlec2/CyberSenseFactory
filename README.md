@@ -25,6 +25,10 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
    source venv/bin/activate
    pip install -r requirements.txt
    ```
+   Avec Windows remplacer "source venv/bin/activate" par :
+   ```bash
+   .\venv\Scripts\Activate
+   ```
 
 ---
 
