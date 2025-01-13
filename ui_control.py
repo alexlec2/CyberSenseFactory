@@ -86,6 +86,15 @@ def update_vitesse(slider, slider_value_label):
 
     return speed_status
 
+def bouton_clicked(bouton_num):
+    """Fonction appelée lorsqu'un bouton est cliqué (ou pressé avec Enter)."""
+    print(f"Vous avez cliqué sur le bouton {bouton_num}.")
+
+# Fonction d'action de "Entrée" sur le bouton
+def on_press_enter(event, bouton_num):
+    """Quand la touche 'Entrée' est pressée, on déclenche le bouton associé."""
+    bouton_clicked(bouton_num)
+
 # Création de l'interface utilisateur
 def create_ui():
     root = Tk()
@@ -105,7 +114,8 @@ def create_ui():
     # Bouton pour l'aiguillage 1
     button_aiguillage_1 = Button(
         root, image=img_position_1,
-        command=lambda: toggle_relay(button_aiguillage_1, relays[0], images, state_aiguillage_1)
+        command=lambda: toggle_relay(button_aiguillage_1, relays[0], images, state_aiguillage_1),
+        takefocus=True
     )
     button_aiguillage_1.pack(pady=10)
 
@@ -116,7 +126,8 @@ def create_ui():
     # Bouton pour l'aiguillage 2
     button_aiguillage_2 = Button(
         root, image=img_position_1,
-        command=lambda: toggle_relay(button_aiguillage_2, relays[1], images, state_aiguillage_2)
+        command=lambda: toggle_relay(button_aiguillage_2, relays[1], images, state_aiguillage_2),
+        takefocus=True
     )
     button_aiguillage_2.pack(pady=10)
 
@@ -138,6 +149,16 @@ def create_ui():
     # Affichage de la valeur du slider
     slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
     slider_value_label.pack()
+
+    # Attacher un événement pour simuler un clic sur les boutons avec Entrée
+    button_aiguillage_1.bind('<Return>', lambda event: on_press_enter(event, 1))  # Touche Entrée sur bouton1
+    button_aiguillage_2.bind('<Return>', lambda event: on_press_enter(event, 2))  # Touche Entrée sur bouton2
+
+    # Enclenchement de l'interaction Tab
+    root.bind('<Tab>', lambda event: button_aiguillage_1.focus_set() if event.widget != button_aiguillage_2 else button_aiguillage_2.focus_set())
+
+    # Initialisation de focus sur bouton1
+    button_aiguillage_1.focus_set()
 
     # Démarrage de la boucle principale de l'interface
     root.mainloop()
