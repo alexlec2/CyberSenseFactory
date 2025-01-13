@@ -38,12 +38,22 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
 
 ## Utilisation
 
-1. Lancez le script Python :
+Il existe 3 cas d'utilisation pour controler les éléments electroniques via l'activation des relais:
+- via le keyboard avec le code `keyboard_control.py` avec l'arduino connecté
 ```bash
-python3 main.py
+python3 keyboard_control.py
 ```
 
-2. Appuyez sur les touches définies pour contrôler les fonctionnalités.
+- via l'interface graphique sans l'arduino connecté (pour faire des tests) avec `withoutArduino/ui_control_withoutArduino.py`
+```bash
+cd withoutArduino
+python3 ui_control_withoutArduino.py
+```
+
+- via l'interface graphique avec l'arduino connecté (version finale) avec `ui_control.py`
+```bash
+python3 ui_control.py
+```
 
 ---
 

@@ -1,5 +1,5 @@
-pyfirmata2
-pyserial
-pynput
-tk
-pillow
+pyfirmata2=2.5.1
+pyserial=3.5
+pynput=1.7.7
+tk=0.1.0
+pillow=11.1.0
