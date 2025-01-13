@@ -1,4 +1,4 @@
-from tkinter import Tk, Button, PhotoImage, Label
+from tkinter import Tk, Button, Label
 from PIL import Image, ImageTk  # Importation pour redimensionner les images
 from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
 from controlAiguillage import activate_relay
@@ -86,9 +86,20 @@ def update_vitesse(slider, slider_value_label):
 
     return speed_status
 
-def bouton_clicked(bouton_num):
+def bouton_clicked(button, relays, images, state):
     """Fonction appelée lorsqu'un bouton est cliqué (ou pressé avec Enter)."""
-    print(f"Vous avez cliqué sur le bouton {bouton_num}.")
+    # Alterne l'image entre position_1 et position_2
+    new_state = 1 - state["image"]
+    button.config(image=images[new_state])  # Met à jour l'image sur le bouton
+    state["image"] = new_state
+
+    # Active le relais correspondant
+    relay_to_activate = relays[state["relay"]]
+    activate_relay(board, relay_to_activate, time_sleep)
+    print(f"Relais activé : {relay_to_activate}")
+
+    # Alterne entre les deux relais
+    state["relay"] = 1 - state["relay"]
 
 # Fonction d'action de "Entrée" sur le bouton
 def on_press_enter(event, bouton_num):
@@ -100,6 +111,7 @@ def create_ui():
     root = Tk()
     root.title("Contrôle Aiguillages")
     root.geometry("350x600")  # Taille adaptée pour les boutons et légendes
+
 
     # Chargement et redimensionnement des images
     max_width = 300
@@ -114,7 +126,7 @@ def create_ui():
     # Bouton pour l'aiguillage 1
     button_aiguillage_1 = Button(
         root, image=img_position_1,
-        command=lambda: toggle_relay(button_aiguillage_1, relays[0], images, state_aiguillage_1),
+        command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1),
         takefocus=True
     )
     button_aiguillage_1.pack(pady=10)
@@ -126,11 +138,18 @@ def create_ui():
     # Bouton pour l'aiguillage 2
     button_aiguillage_2 = Button(
         root, image=img_position_1,
-        command=lambda: toggle_relay(button_aiguillage_2, relays[1], images, state_aiguillage_2),
+        command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2),
         takefocus=True
     )
     button_aiguillage_2.pack(pady=10)
 
+    # # Définir un style pour le focus des boutons
+    # style = ttk.Style(root)
+    # style.configure('TButton', font=('Helvetica', 16))
+    # style.map('TButton',
+    #             foreground=[('focused', 'blue'),
+    #                         ('active', 'red')])
+    
     # Légende pour l'aiguillage 2
     label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
     label_aiguillage_2.pack(pady=5)
@@ -151,11 +170,11 @@ def create_ui():
     slider_value_label.pack()
 
     # Attacher un événement pour simuler un clic sur les boutons avec Entrée
-    button_aiguillage_1.bind('<Return>', lambda event: on_press_enter(event, 1))  # Touche Entrée sur bouton1
-    button_aiguillage_2.bind('<Return>', lambda event: on_press_enter(event, 2))  # Touche Entrée sur bouton2
+    button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1))  # Touche Entrée sur bouton1
+    button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2))  # Touche Entrée sur bouton2
 
     # Enclenchement de l'interaction Tab
-    root.bind('<Tab>', lambda event: button_aiguillage_1.focus_set() if event.widget != button_aiguillage_2 else button_aiguillage_2.focus_set())
+    root.bind('<Tab>', lambda event: button_aiguillage_1.focus_set() if event.widget == button_aiguillage_2 else button_aiguillage_2.focus_set())
 
     # Initialisation de focus sur bouton1
     button_aiguillage_1.focus_set()
