@@ -24,6 +24,10 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
    python3 -m venv ./venv
    source venv/bin/activate
    pip install -r requirements.txt
+
+   # On mac
+   brew install python-tk
+   pip install tk
    ```
    Avec Windows remplacer "source venv/bin/activate" par :
    ```bash
