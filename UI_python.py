@@ -46,7 +46,7 @@ def toggle_relay(button, relays, images, state):
 
     # Active le relais alternatif
     relay_to_activate = relays[state["relay"]]
-    # activate_relay(board, relay_to_activate, time_sleep)
+    activate_relay(board, relay_to_activate, time_sleep)
     print("Relai activé :", relay_to_activate)
 
     # Alterne entre les deux relais
@@ -61,24 +61,24 @@ def update_vitesse(slider, slider_value_label):
     slider_value_label.config(text=f"Vitesse: {vitesse}")
 
     if vitesse == 10 and speed_status != 10:
-        # board.digital[relays[2][1]].write(0)
+        board.digital[relays[2][1]].write(0)
         print(f"Activation du relais {relays[2][1]}.")
-        # board.digital[relays[2][0]].write(1)
+        board.digital[relays[2][0]].write(1)
         print(f"Le relais {relays[2][0]} est à 0.")
         print("Le train avance")
         speed_status = 10
 
     elif vitesse == -10 and speed_status != -10:
-        # board.digital[relays[2][0]].write(0)
+        board.digital[relays[2][0]].write(0)
         print(f"Activation du relais {relays[2][0]}.")
-        # board.digital[relays[2][1]].write(1)
+        board.digital[relays[2][1]].write(1)
         print(f"Le relai {relays[2][1]} est à 0.")
         print("Le train recule")
         speed_status = -10
 
     elif vitesse == 0 and speed_status != 0:
-        # board.digital[relays[2][1]].write(0)
-        # board.digital[relays[2][0]].write(0)
+        board.digital[relays[2][1]].write(0)
+        board.digital[relays[2][0]].write(0)
         print(f"Le relais {relays[2][0]} est à 0.")
         print(f"Le relais {relays[2][1]} est à 0.")
         print("Le train est à l'arrêt")
@@ -144,7 +144,7 @@ def create_ui():
 
 # Exécution principale
 if __name__ == "__main__":
-    # setup_arduino()  # Connexion et configuration Arduino
+    setup_arduino()  # Connexion et configuration Arduino
 
     print("Interface prête. Utilisez les boutons pour contrôler les aiguillages.")
 
