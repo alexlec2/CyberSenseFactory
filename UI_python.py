@@ -8,7 +8,8 @@ from ttkbootstrap.constants import *
 # Initialisation
 board = None
 time_sleep = 0.5  # Durée d'activation du relais (en secondes)
-relays = [[13, 12], [8, 7]]  # Duo d'input pour les relais
+relays = [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
+speed_status = 0
 
 # Fonction d'initialisation Arduino
 def setup_arduino():
@@ -45,18 +46,45 @@ def toggle_relay(button, relays, images, state):
 
     # Active le relais alternatif
     relay_to_activate = relays[state["relay"]]
-    activate_relay(board, relay_to_activate, time_sleep)
+    # activate_relay(board, relay_to_activate, time_sleep)
     print("Relai activé :", relay_to_activate)
-    
+
     # Alterne entre les deux relais
     state["relay"] = 1 - state["relay"]
 
 # Affichage de la vitesse sélectionnée avec un slider
 def update_vitesse(slider, slider_value_label):
-    """Mise à jour du label de vitesse en fonction de la valeur du slider."""
-    vitesse = int(slider.get())  # Obtient la valeur du slider
-    slider_value_label.config(text=f"Vitesse: {vitesse}%")
+    """Mise à jour du label de vitesse en fonction de la valeur du slider + activate relay of vitesse"""
+    global speed_status
 
+    vitesse = int(slider.get())*10  # Obtient la valeur du slider
+    slider_value_label.config(text=f"Vitesse: {vitesse}")
+
+    if vitesse == 10 and speed_status != 10:
+        # board.digital[relays[2][1]].write(0)
+        print(f"Activation du relais {relays[2][1]}.")
+        # board.digital[relays[2][0]].write(1)
+        print(f"Le relais {relays[2][0]} est à 0.")
+        print("Le train avance")
+        speed_status = 10
+
+    elif vitesse == -10 and speed_status != -10:
+        # board.digital[relays[2][0]].write(0)
+        print(f"Activation du relais {relays[2][0]}.")
+        # board.digital[relays[2][1]].write(1)
+        print(f"Le relai {relays[2][1]} est à 0.")
+        print("Le train recule")
+        speed_status = -10
+
+    elif vitesse == 0 and speed_status != 0:
+        # board.digital[relays[2][1]].write(0)
+        # board.digital[relays[2][0]].write(0)
+        print(f"Le relais {relays[2][0]} est à 0.")
+        print(f"Le relais {relays[2][1]} est à 0.")
+        print("Le train est à l'arrêt")
+        speed_status = 0
+
+    return speed_status
 
 # Création de l'interface utilisateur
 def create_ui():
@@ -102,13 +130,13 @@ def create_ui():
 
     # Slider avec plage de -100% à +100%
     vitesse_slider = ttk.Scale(
-        frame_slider, from_=-100, to=100, value=0, length=200, orient="horizontal",
+        frame_slider, from_=-1, to=1, value=0, length=200, orient="horizontal",
         command=lambda val: update_vitesse(vitesse_slider, slider_value_label)  # Mise à jour du label
     )
     vitesse_slider.pack()
     
     # Affichage de la valeur du slider
-    slider_value_label = Label(frame_slider, text="Vitesse: 0%", font=("Arial", 14))
+    slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
     slider_value_label.pack()
 
     # Démarrage de la boucle principale de l'interface
@@ -116,7 +144,7 @@ def create_ui():
 
 # Exécution principale
 if __name__ == "__main__":
-    setup_arduino()  # Connexion et configuration Arduino
+    # setup_arduino()  # Connexion et configuration Arduino
 
     print("Interface prête. Utilisez les boutons pour contrôler les aiguillages.")
 
