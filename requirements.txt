@@ -2,3 +2,4 @@ pyfirmata2
 pyserial
 pynput
 tk
+pillow
