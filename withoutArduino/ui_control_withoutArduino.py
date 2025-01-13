@@ -1,7 +1,6 @@
 from tkinter import Tk, Button, Label
 from PIL import Image, ImageTk  # Importation pour redimensionner les images
-from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
-from controlAiguillage import activate_relay
+from controlAiguillage_withoutArduino import activate_relay
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
@@ -11,15 +10,6 @@ time_sleep = 0.5  # Durée d'activation du relais (en secondes)
 relays = [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
 speed_status = 0
 
-# Fonction d'initialisation Arduino
-def setup_arduino():
-    global board
-    name_arduino = "UNO WiFi R4"
-    board = connect_to_arduino(name_arduino)
-    if not board:
-        print("Impossible de se connecter à l'Arduino. Le programme va se fermer.")
-        exit()
-    init_relay_output(board, relays)
 
 # Fonction de redimensionnement des images
 def resize_image(file_path, max_width):
@@ -42,24 +32,24 @@ def update_vitesse(slider, slider_value_label):
     slider_value_label.config(text=f"Vitesse: {vitesse}")
 
     if vitesse == 10 and speed_status != 10:
-        board.digital[relays[2][1]].write(0)
+        # board.digital[relays[2][1]].write(0)
         print(f"Activation du relais {relays[2][1]}.")
-        board.digital[relays[2][0]].write(1)
+        # board.digital[relays[2][0]].write(1)
         print(f"Le relais {relays[2][0]} est à 0.")
         print("Le train avance")
         speed_status = 10
 
     elif vitesse == -10 and speed_status != -10:
-        board.digital[relays[2][0]].write(0)
+        # board.digital[relays[2][0]].write(0)
         print(f"Activation du relais {relays[2][0]}.")
-        board.digital[relays[2][1]].write(1)
+        # board.digital[relays[2][1]].write(1)
         print(f"Le relai {relays[2][1]} est à 0.")
         print("Le train recule")
         speed_status = -10
 
     elif vitesse == 0 and speed_status != 0:
-        board.digital[relays[2][1]].write(0)
-        board.digital[relays[2][0]].write(0)
+        # board.digital[relays[2][1]].write(0)
+        # board.digital[relays[2][0]].write(0)
         print(f"Le relais {relays[2][0]} est à 0.")
         print(f"Le relais {relays[2][1]} est à 0.")
         print("Le train est à l'arrêt")
@@ -91,8 +81,8 @@ def create_ui():
 
     # Chargement et redimensionnement des images
     max_width = 300
-    img_position_1 = resize_image("images/position_1.png", max_width)
-    img_position_2 = resize_image("images/position_2.png", max_width)
+    img_position_1 = resize_image("../images/position_1.png", max_width)
+    img_position_2 = resize_image("../images/position_2.png", max_width)
     images = [img_position_1, img_position_2]
 
     # États initiaux des aiguillages
@@ -160,7 +150,7 @@ def create_ui():
 
 # Exécution principale
 if __name__ == "__main__":
-    setup_arduino()  # Connexion et configuration Arduino
+    # setup_arduino()  # Connexion et configuration Arduino
 
     print("Interface prête. Utilisez les boutons pour contrôler les aiguillages.")
 
@@ -168,5 +158,5 @@ if __name__ == "__main__":
     create_ui()
 
     # Déconnexion après fermeture de l'interface
-    disconnect_from_arduino(board)
+    # disconnect_from_arduino(board)
     print("Déconnexion de l'Arduino.")
