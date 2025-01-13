@@ -44,16 +44,22 @@ Il existe 3 cas d'utilisation pour controler les éléments electroniques via l'
 python3 keyboard_control.py
 ```
 
+- via l'interface graphique avec l'arduino connecté (version finale) avec `ui_control.py`
+```bash
+python3 ui_control.py
+```
+
 - via l'interface graphique sans l'arduino connecté (pour faire des tests) avec `withoutArduino/ui_control_withoutArduino.py`
 ```bash
 cd withoutArduino
 python3 ui_control_withoutArduino.py
 ```
-
-- via l'interface graphique avec l'arduino connecté (version finale) avec `ui_control.py`
+- via le keyboard sans l'arduino connecté (pour faire des tests) avec `withoutArduino/keyboard_control_withoutArduino.py`
 ```bash
-python3 ui_control.py
+cd withoutArduino
+python3 keyboard_control_withoutArduino.py
 ```
+
 
 ---
 
