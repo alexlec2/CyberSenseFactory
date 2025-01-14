@@ -1,45 +1,40 @@
 import pyfirmata2
-import time
 import serial.tools.list_ports
 
-
-def main():
+def find_arduino():
+    """Recherche les ports série disponibles et retourne le bon port Arduino si trouvé."""
     ports = serial.tools.list_ports.comports()
     for port in ports:
-        print(port)
-    # Spécifiez le port COM auquel votre Arduino est connecté
-    port = pyfirmata2.Arduino.AUTODETECT  # Vous pouvez spécifier "COM3" ou "COMx" directement
-    print(f"Tentative de connexion à l'Arduino sur le port : {port}")
+        print(f"Port détecté : {port.device} (Description : {port.description})")  # Affichage du port
+        # Vérification de l'élément de la description pour la présence de "Arduino" ou d'autres indications
+        if "Arduino" in port.device or "usb" in port.device.lower():
+            return port.device  # Retourner le port trouvé
+    return None  # Aucun Arduino trouvé
 
-    # Connectez-vous à l'Arduino
+def connect_to_arduino():
+    """Établit la connexion à l'Arduino via un port série."""
     try:
+        port = find_arduino()  # Recherche du port
+        if port is None:
+            print("Aucun Arduino connecté, aucune détection de port série.")
+            return None
+
+        print(f"Connexion en cours avec l'Arduino sur le port {port}...")
         board = pyfirmata2.Arduino(port)
-        print(f"Connecté à l'Arduino sur {port}.")
+        print(f"Connecté avec succès à l'Arduino sur {port}.")
+        return board
+
+    except IOError as e:
+        print(f"Erreur de connexion à l'Arduino : {e}")
+        return None
     except Exception as e:
-        print(f"Impossible de se connecter à l'Arduino. Vérifiez le port et essayez à nouveau.\nErreur : {e}")
-        return
+        print(f"Erreur inattendue : {e}")
+        return None
 
-    # Configuration d'une broche pour démonstration
-    led_pin = 13  # Broche numérique pour la LED
-    board.digital[led_pin].mode = pyfirmata2.OUTPUT
+# Appel de la fonction
+board = connect_to_arduino()
 
-    try:
-        while True:
-            # Allumer la LED
-            print("LED ON")
-            board.digital[led_pin].write(1)
-            time.sleep(1)  # Attendre 1 seconde
-
-            # Éteindre la LED
-            print("LED OFF")
-            board.digital[led_pin].write(0)
-            time.sleep(1)  # Attendre 1 seconde
-
-    except KeyboardInterrupt:
-        print("\nProgramme interrompu par l'utilisateur.")
-    finally:
-        board.exit()  # Fermer correctement la connexion
-        print("Connexion à l'Arduino terminée.")
-
-if __name__ == "__main__":
-    main()
+if board:
+    print("L'Arduino est prêt à être utilisé.")
+else:
+    print("Impossible de connecter l'Arduino.")
