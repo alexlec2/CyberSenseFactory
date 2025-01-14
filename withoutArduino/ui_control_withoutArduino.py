@@ -3,6 +3,8 @@ from PIL import Image, ImageTk  # Importation pour redimensionner les images
 from controlAiguillage_withoutArduino import activate_relay
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+import sys
+import os
 
 # Initialisation
 board = None
@@ -12,10 +14,15 @@ speed_status = 0
 current_cycle_index = 0
 current_cycle_index_old = -1
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 # Fonction de redimensionnement des images
 def resize_image(file_path, max_width):
     """Redimensionne une image tout en gardant ses proportions pour une largeur maximale."""
-    image = Image.open(file_path)
+    image = Image.open(resource_path(file_path))
     width, height = image.size
 
     if width > max_width:
@@ -90,8 +97,8 @@ def create_ui():
 
     # Chargement et redimensionnement des images
     max_width = 300
-    img_position_1 = resize_image("../images/position_1.png", max_width)
-    img_position_2 = resize_image("../images/position_2.png", max_width)
+    img_position_1 = resize_image("images/position_1.png", max_width)
+    img_position_2 = resize_image("images/position_2.png", max_width)
     images = [img_position_1, img_position_2]
 
     # États initiaux des aiguillages
