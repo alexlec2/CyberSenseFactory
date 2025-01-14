@@ -13,15 +13,23 @@ speed_status = 0
 current_cycle_index = 0
 current_cycle_index_old = -1
 
-# Fonction d'initialisation Arduino
-def setup_arduino():
+def try_connecting(status_label, ui_elements, root):
+    """Essaye de connecter à l'Arduino toutes les secondes jusqu'à ce qu'il réussisse."""
     global board
     name_arduino = "UNO WiFi R4"
     board = connect_to_arduino(name_arduino)
     if not board:
-        print("Impossible de se connecter à l'Arduino. Le programme va se fermer.")
-        exit()
-    init_relay_output(board, relays)
+        status_label.config(text="Aucun Arduino détécté.", foreground="red")
+        root.after(1000, lambda: try_connecting(status_label, ui_elements, root))
+    else:
+        # Arduino connecté
+        status_label.config(text="Connecté à l'Arduino.", foreground="green")
+        init_relay_output(board, relays)
+
+        # Activer les boutons et le slider
+        for element in ui_elements:
+            element.config(state=NORMAL)
+
 
 # Fonction de redimensionnement des images
 def resize_image(file_path, max_width):
@@ -44,7 +52,7 @@ def update_vitesse(slider, slider_value_label):
         current_cycle_index_old = current_cycle_index
         current_cycle_index = int(slider.get())
 
-    vitesse = int(slider.get())*10  # Obtient la valeur du slider
+    vitesse = int(slider.get()) * 10  # Obtient la valeur du slider
     slider_value_label.config(text=f"Vitesse: {vitesse}")
 
     if vitesse == 10 and speed_status != 10:
@@ -54,7 +62,6 @@ def update_vitesse(slider, slider_value_label):
         print(f"Le relais {relays[2][0]} est à 0.")
         print("Le train avance")
         speed_status = 10
-       
 
     elif vitesse == -10 and speed_status != -10:
         board.digital[relays[2][0]].write(0)
@@ -91,12 +98,12 @@ def bouton_clicked(button, relays, images, state):
 
 # Création de l'interface utilisateur
 def create_ui():
-    global vitesse_slider  # Rendre la variable disponible dans la fonction d'événement
+    global vitesse_slider
     global slider_value_label, current_cycle_index, cycle_vitesse_states
 
     root = Tk()
     root.title("Contrôle Aiguillages")
-    root.geometry("350x600")  # Taille adaptée pour les boutons et légendes
+    root.geometry("350x600")
 
     # Chargement et redimensionnement des images
     max_width = 300
@@ -105,14 +112,18 @@ def create_ui():
     images = [img_position_1, img_position_2]
 
     # États initiaux des aiguillages
-    state_aiguillage_1 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (13)
-    state_aiguillage_2 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (8)
+    state_aiguillage_1 = {"image": 0, "relay": 0}
+    state_aiguillage_2 = {"image": 0, "relay": 0}
+
+    # Étiquette de connexion
+    status_label = Label(root, text="Tentative de connexion à l'Arduino...", font=("Arial", 12), fg="blue")
+    status_label.pack(pady=10)
 
     # Bouton pour l'aiguillage 1
     button_aiguillage_1 = Button(
         root, image=img_position_1,
         command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1),
-        takefocus=True
+        state=DISABLED,  # Désactivé au départ
     )
     button_aiguillage_1.pack(pady=10)
 
@@ -124,27 +135,25 @@ def create_ui():
     button_aiguillage_2 = Button(
         root, image=img_position_1,
         command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2),
-        takefocus=True
+        state=DISABLED,
     )
     button_aiguillage_2.pack(pady=10)
-    
+
     # Légende pour l'aiguillage 2
     label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
     label_aiguillage_2.pack(pady=5)
 
-    # Création du slider de vitesse
+    # Slider de vitesse
     frame_slider = ttk.Frame(root)
     frame_slider.pack(pady=10)
-
-    # Slider avec plage de -100% à +100%
     vitesse_slider = ttk.Scale(
         frame_slider, from_=-1, to=1, value=0, length=200, orient="horizontal",
-        command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
-        takefocus=True
+        command=lambda val: update_vitesse(vitesse_slider, slider_value_label),
+        state=DISABLED,
     )
     vitesse_slider.pack()
-    
-    # Affichage de la valeur du slider
+
+    # Étiquette de la valeur du slider
     slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
     slider_value_label.pack()
 
@@ -173,18 +182,17 @@ def create_ui():
     # Initialisation de focus sur bouton1
     button_aiguillage_1.focus_set()
 
-    # Démarrage de la boucle principale de l'interface
+    # Liste des éléments d'interface à activer après connexion
+    ui_elements = [button_aiguillage_1, button_aiguillage_2, vitesse_slider]
+
+    # Tentative de connexion
+    root.after(100, lambda: try_connecting(status_label, ui_elements, root))
+
+    # Démarrage de la boucle principale
     root.mainloop()
 
 # Exécution principale
 if __name__ == "__main__":
-    setup_arduino()  # Connexion et configuration Arduino
-
-    print("Interface prête. Utilisez les boutons pour contrôler les aiguillages.")
-
-    # Lance l'interface utilisateur Tkinter
+    print("Interface prête.")
     create_ui()
-
-    # Déconnexion après fermeture de l'interface
     disconnect_from_arduino(board)
-    print("Déconnexion de l'Arduino.")
