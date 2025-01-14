@@ -10,6 +10,8 @@ board = None
 time_sleep = 0.5  # Durée d'activation du relais (en secondes)
 relays = [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
 speed_status = 0
+current_cycle_index = 0
+current_cycle_index_old = -1
 
 # Fonction d'initialisation Arduino
 def setup_arduino():
@@ -36,7 +38,11 @@ def resize_image(file_path, max_width):
 # Affichage de la vitesse sélectionnée avec un slider
 def update_vitesse(slider, slider_value_label):
     """Mise à jour du label de vitesse en fonction de la valeur du slider + activate relay of vitesse"""
-    global speed_status
+    global speed_status, current_cycle_index, current_cycle_index_old
+
+    if current_cycle_index != current_cycle_index_old and int(slider.get()) != current_cycle_index:
+        current_cycle_index_old = current_cycle_index
+        current_cycle_index = int(slider.get())
 
     vitesse = int(slider.get())*10  # Obtient la valeur du slider
     slider_value_label.config(text=f"Vitesse: {vitesse}")
@@ -48,6 +54,7 @@ def update_vitesse(slider, slider_value_label):
         print(f"Le relais {relays[2][0]} est à 0.")
         print("Le train avance")
         speed_status = 10
+       
 
     elif vitesse == -10 and speed_status != -10:
         board.digital[relays[2][0]].write(0)
@@ -90,7 +97,6 @@ def create_ui():
     root = Tk()
     root.title("Contrôle Aiguillages")
     root.geometry("350x600")  # Taille adaptée pour les boutons et légendes
-
 
     # Chargement et redimensionnement des images
     max_width = 300
@@ -149,24 +155,16 @@ def create_ui():
     # Fonction de gestion du focus sur slider avec "Enter"
     def handle_enter_on_slider(event):
         """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
-        current_cycle_index = (current_cycle_index + 1) % len(cycle_vitesse_states)
-        new_value = cycle_vitesse_states[current_cycle_index]
-        vitesse_slider.set(new_value)  # Met à jour la position du slider
-        update_vitesse(vitesse_slider, slider_value_label)  # Réactualise l'affichage
-
-    # Lier "Enter" au slider pour changer de valeur dans le cycle
-    vitesse_slider.bind('<Return>', handle_enter_on_slider)
-
-    # Variable globale pour garder l'état du cycle de la vitesse
-    cycle_vitesse_states = [0, 1, 0, -1]
-    current_cycle_index = 0
-
-    def handle_enter_on_slider(event):
-        """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
-        global current_cycle_index, cycle_vitesse_states
+        global current_cycle_index, cycle_vitesse_states, current_cycle_index_old
         # Passe au prochain état dans le cycle
-        current_cycle_index = (current_cycle_index + 1) % len(cycle_vitesse_states)
-        new_value = cycle_vitesse_states[current_cycle_index]
+
+        if current_cycle_index == 0 and current_cycle_index_old == -1:
+            new_value = 1
+        elif (current_cycle_index == 1 or current_cycle_index == -1)  and current_cycle_index_old == 0:
+            new_value = 0
+        elif current_cycle_index == 0 and current_cycle_index_old == 1:
+            new_value = -1
+
         vitesse_slider.set(new_value)  # Met à jour le slider
         update_vitesse(vitesse_slider, slider_value_label)  # Met à jour l'interface
 
