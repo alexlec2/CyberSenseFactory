@@ -84,6 +84,9 @@ def bouton_clicked(button, relays, images, state):
 
 # Création de l'interface utilisateur
 def create_ui():
+    global vitesse_slider  # Rendre la variable disponible dans la fonction d'événement
+    global slider_value_label, current_cycle_index, cycle_vitesse_states
+
     root = Tk()
     root.title("Contrôle Aiguillages")
     root.geometry("350x600")  # Taille adaptée pour les boutons et légendes
@@ -118,13 +121,6 @@ def create_ui():
         takefocus=True
     )
     button_aiguillage_2.pack(pady=10)
-
-    # # Définir un style pour le focus des boutons
-    # style = ttk.Style(root)
-    # style.configure('TButton', font=('Helvetica', 16))
-    # style.map('TButton',
-    #             foreground=[('focused', 'blue'),
-    #                         ('active', 'red')])
     
     # Légende pour l'aiguillage 2
     label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
@@ -137,7 +133,8 @@ def create_ui():
     # Slider avec plage de -100% à +100%
     vitesse_slider = ttk.Scale(
         frame_slider, from_=-1, to=1, value=0, length=200, orient="horizontal",
-        command=lambda val: update_vitesse(vitesse_slider, slider_value_label)  # Mise à jour du label
+        command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
+        takefocus=True
     )
     vitesse_slider.pack()
     
@@ -149,8 +146,31 @@ def create_ui():
     button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1))  # Touche Entrée sur bouton1
     button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2))  # Touche Entrée sur bouton2
 
-    # Enclenchement de l'interaction Tab
-    root.bind('<Tab>', lambda event: button_aiguillage_1.focus_set() if event.widget == button_aiguillage_2 else button_aiguillage_2.focus_set())
+    # Fonction de gestion du focus sur slider avec "Enter"
+    def handle_enter_on_slider(event):
+        """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
+        current_cycle_index = (current_cycle_index + 1) % len(cycle_vitesse_states)
+        new_value = cycle_vitesse_states[current_cycle_index]
+        vitesse_slider.set(new_value)  # Met à jour la position du slider
+        update_vitesse(vitesse_slider, slider_value_label)  # Réactualise l'affichage
+
+    # Lier "Enter" au slider pour changer de valeur dans le cycle
+    vitesse_slider.bind('<Return>', handle_enter_on_slider)
+
+    # Variable globale pour garder l'état du cycle de la vitesse
+    cycle_vitesse_states = [0, 1, 0, -1]
+    current_cycle_index = 0
+
+    def handle_enter_on_slider(event):
+        """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
+        global current_cycle_index, cycle_vitesse_states
+        # Passe au prochain état dans le cycle
+        current_cycle_index = (current_cycle_index + 1) % len(cycle_vitesse_states)
+        new_value = cycle_vitesse_states[current_cycle_index]
+        vitesse_slider.set(new_value)  # Met à jour le slider
+        update_vitesse(vitesse_slider, slider_value_label)  # Met à jour l'interface
+
+    vitesse_slider.bind('<Return>', handle_enter_on_slider)
 
     # Initialisation de focus sur bouton1
     button_aiguillage_1.focus_set()

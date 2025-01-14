@@ -36,7 +36,7 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
 
 ---
 
-## Utilisation
+## Utilisation Code
 
 Il existe 3 cas d'utilisation pour controler les éléments electroniques via l'activation des relais:
 - via le keyboard avec le code `keyboard_control.py` avec l'arduino connecté
@@ -59,6 +59,15 @@ python3 ui_control_withoutArduino.py
 cd withoutArduino
 python3 keyboard_control_withoutArduino.py
 ```
+
+---
+
+
+## Utilisation Focus
+
+La touche <Tab> permet de naviguer entre les trois élements (les 2 boutons et le slider).   
+Une fois le focus dessus, la touche <Return> ou "Entrée" permet de changer sa valeur.  
+Par défaut le focus est de base sur le bouton n1 (Aiguillage 1).  
 
 
 ---
