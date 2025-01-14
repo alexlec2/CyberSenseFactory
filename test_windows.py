@@ -5,6 +5,7 @@ def find_arduino():
     """Recherche les ports série disponibles et retourne le bon port Arduino si trouvé."""
     ports = serial.tools.list_ports.comports()
     for port in ports:
+        print(f"{port}")
         print(f"Port détecté : {port.device} (Description : {port.description})")  # Affichage du port
         # Vérification de l'élément de la description pour la présence de "Arduino" ou d'autres indications
         if "Arduino" in port.device or "usb" in port.device.lower():
