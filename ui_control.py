@@ -4,6 +4,8 @@ from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
 from controlAiguillage import activate_relay
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+import sys
+import os
 
 # Initialisation
 board = None
@@ -12,6 +14,11 @@ relays = [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
 speed_status = 0
 current_cycle_index = 0
 current_cycle_index_old = -1
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 def try_connecting(status_label, ui_elements, root):
     """Essaye de connecter à l'Arduino toutes les secondes jusqu'à ce qu'il réussisse."""
@@ -34,7 +41,7 @@ def try_connecting(status_label, ui_elements, root):
 # Fonction de redimensionnement des images
 def resize_image(file_path, max_width):
     """Redimensionne une image tout en gardant ses proportions pour une largeur maximale."""
-    image = Image.open(file_path)
+    image = Image.open(resource_path(file_path))
     width, height = image.size
 
     if width > max_width:
