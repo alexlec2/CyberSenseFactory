@@ -12,7 +12,9 @@ def find_arduino(name):
 def connect_to_arduino(name):
     """Établit la connexion à l'Arduino."""
     try:
-        port = find_arduino(name)
+        # port = find_arduino(name)
+        port = Arduino.AUTODETECT
+        print(port)
         print(f"Connexion en cours avec l'Arduino {port.description} sur le port {port.device}...")
         board = Arduino(port.device)
         print(f"Connecté avec succès à l'Arduino {port.description}.\n")
