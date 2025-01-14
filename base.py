@@ -15,9 +15,9 @@ def connect_to_arduino(name):
         # port = find_arduino(name)
         port = Arduino.AUTODETECT
         print(port)
-        print(f"Connexion en cours avec l'Arduino {port.description} sur le port {port.device}...")
-        board = Arduino(port.device)
-        print(f"Connecté avec succès à l'Arduino {port.description}.\n")
+        print(f"Connexion en cours avec l'Arduino {port} sur le port {port}...")
+        board = Arduino(port)
+        print(f"Connecté avec succès à l'Arduino {port}.\n")
         return board
     except IOError as e:
         print(e)
