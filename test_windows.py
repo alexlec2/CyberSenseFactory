@@ -1,19 +1,27 @@
 import pyfirmata2
 import time
+import serial.tools.list_ports
+
 
 def main():
-    # Remplacez "COM3" par le port série de votre Arduino
-    port = pyfirmata2.Arduino.AUTODETECT  # Auto-détection du port
-    print("Recherche du port Arduino...")
-    board = pyfirmata2.Arduino(port)
-    print(f"Connecté à l'Arduino sur le port : {port}")
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        print(port)
+    # Spécifiez le port COM auquel votre Arduino est connecté
+    port = pyfirmata2.Arduino.AUTODETECT  # Vous pouvez spécifier "COM3" ou "COMx" directement
+    print(f"Tentative de connexion à l'Arduino sur le port : {port}")
 
-    # Initialisation de la LED (par exemple sur la broche 13)
-    led_pin = 13
+    # Connectez-vous à l'Arduino
+    try:
+        board = pyfirmata2.Arduino(port)
+        print(f"Connecté à l'Arduino sur {port}.")
+    except Exception as e:
+        print(f"Impossible de se connecter à l'Arduino. Vérifiez le port et essayez à nouveau.\nErreur : {e}")
+        return
+
+    # Configuration d'une broche pour démonstration
+    led_pin = 13  # Broche numérique pour la LED
     board.digital[led_pin].mode = pyfirmata2.OUTPUT
-
-    # Configuration pour lire une broche analogique (exemple A0)
-    analog_pin = 0
 
     try:
         while True:
@@ -27,16 +35,11 @@ def main():
             board.digital[led_pin].write(0)
             time.sleep(1)  # Attendre 1 seconde
 
-            # Lire une valeur analogique
-            analog_value = board.analog[analog_pin].read()
-            if analog_value is not None:
-                print(f"Valeur analogique (A0): {analog_value}")
-            
     except KeyboardInterrupt:
         print("\nProgramme interrompu par l'utilisateur.")
     finally:
-        board.exit()  # Déconnecter proprement l'Arduino
-        print("Arduino déconnecté.")
+        board.exit()  # Fermer correctement la connexion
+        print("Connexion à l'Arduino terminée.")
 
 if __name__ == "__main__":
     main()
