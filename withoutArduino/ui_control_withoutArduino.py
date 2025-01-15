@@ -164,7 +164,7 @@ def create_frames(root, margin):
     # Slider vertical
     frame_slider = section1
     vitesse_slider = ttk.Scale(
-        frame_slider, from_=-1, to=1, value=0, length=200, orient="vertical",
+        frame_slider, from_=1, to=-1, value=0, length=200, orient="vertical",
         command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
         takefocus=True
     )
