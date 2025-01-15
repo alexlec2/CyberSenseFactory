@@ -1,4 +1,4 @@
-from tkinter import Tk, Button, Label
+from tkinter import Tk, Button, Label, Frame, Scale, PhotoImage
 from PIL import Image, ImageTk  # Importation pour redimensionner les images
 from controlAiguillage_withoutArduino import activate_relay
 import ttkbootstrap as ttk
@@ -20,14 +20,27 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Fonction de redimensionnement des images
-def resize_image(file_path, max_width):
-    """Redimensionne une image tout en gardant ses proportions pour une largeur maximale."""
+def resize_image(file_path, max_height):
+    """
+    Redimensionne une image tout en gardant ses proportions pour une hauteur maximale.
+    Ajoute une option pour retourner l'image en miroir.
+    
+    Args:
+        file_path (str): Chemin du fichier image.
+        max_height (int): Hauteur maximale souhaitée.
+        mirror (bool): Si True, retourne l'image horizontalement.
+
+    Returns:
+        ImageTk.PhotoImage: Image redimensionnée et (éventuellement) retournée.
+    """
     image = Image.open(resource_path(file_path))
+
     width, height = image.size
 
-    if width > max_width:
-        new_height = int(max_width * height / width)
-        image = image.resize((max_width, new_height), Image.Resampling.LANCZOS)
+    # Redimensionnement si nécessaire
+    if height > max_height:
+        new_width = int(max_height * width / height)
+        image = image.resize((new_width+25, max_height), Image.Resampling.LANCZOS)
 
     return ImageTk.PhotoImage(image)
 
@@ -74,6 +87,7 @@ def update_vitesse(slider, slider_value_label):
 def bouton_clicked(button, relays, images, state):
     """Fonction appelée lorsqu'un bouton est cliqué (ou pressé avec Enter)."""
     # Alterne l'image entre position_1 et position_2
+    print(images)
     new_state = 1 - state["image"]
     button.config(image=images[new_state])  # Met à jour l'image sur le bouton
     state["image"] = new_state
@@ -86,68 +100,77 @@ def bouton_clicked(button, relays, images, state):
     # Alterne entre les deux relais
     state["relay"] = 1 - state["relay"]
 
-# Création de l'interface utilisateur
-def create_ui():
-    global vitesse_slider  # Rendre la variable disponible dans la fonction d'événement
-    global slider_value_label, current_cycle_index, cycle_vitesse_states
+def create_element_with_label(parent, element, element_args, text, row, column):
+    # Créer l'élément
+    widget = element(parent, **element_args)
+    widget.grid(row=row, column=column)
 
-    root = Tk()
-    root.title("Contrôle Aiguillages")
-    root.geometry("350x600")  # Taille adaptée pour les boutons et légendes
+    # Créer le label associé
+    label = Label(parent, text=text, bg="white")
+    label.grid(row=row + 1, column=column)
 
-    # Chargement et redimensionnement des images
-    max_width = 300
-    img_position_1 = resize_image("images/position_1.png", max_width)
-    img_position_2 = resize_image("images/position_2.png", max_width)
-    images = [img_position_1, img_position_2]
+    return widget, label
+
+def create_frames(root, margin):
+    # Création de la première section
+    section1 = Frame(root, bg="white", height=420, width=740)
+    section1.grid(row=0, column=0, padx=margin, pady=margin)
+
+    # Configuration de la grille pour les éléments dans section1
+    section1.columnconfigure((0, 1, 2), weight=1)  # 3 colonnes pour les éléments
+    section1.rowconfigure(0, weight=9)  # Ligne pour les éléments
+    section1.rowconfigure(1, weight=1)  # Ligne pour les labels
+
+    # Obtenez la hauteur dynamique de la section 1
+    max_height = 400
+    img_position_1 = resize_image("images/position_1.png", max_height)
+    img_position_2 = resize_image("images/position_2.png", max_height)
+    img_position_3 = resize_image("images/position_3.png", max_height)
+    img_position_4 = resize_image("images/position_4.png", max_height)
+
+    images_list = [img_position_1, img_position_2]
+    images_list2 = [img_position_3, img_position_4]
 
     # États initiaux des aiguillages
-    state_aiguillage_1 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (13)
-    state_aiguillage_2 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (8)
+    state_aiguillage_1 = {"image": 0, "relay": 0}
+    state_aiguillage_2 = {"image": 0, "relay": 0}
 
-    # Bouton pour l'aiguillage 1
+    # Bouton et légende pour l'aiguillage 1
     button_aiguillage_1 = Button(
-        root, image=img_position_1,
-        command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1),
+        section1, image=img_position_1,
+        command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1),
         takefocus=True
     )
-    button_aiguillage_1.pack(pady=10)
+    button_aiguillage_1.grid(row=0, column=0)
+    label_aiguillage_1 = Label(section1, text="Aiguillage 1", font=("Arial", 14))
+    label_aiguillage_1.grid(row=1, column=0)
 
-    # Légende pour l'aiguillage 1
-    label_aiguillage_1 = Label(root, text="Aiguillage 1", font=("Arial", 14))
-    label_aiguillage_1.pack(pady=5)
-
-    # Bouton pour l'aiguillage 2
+    # Bouton et légende pour l'aiguillage 2
     button_aiguillage_2 = Button(
-        root, image=img_position_1,
-        command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2),
+        section1, image=img_position_3,
+        command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2),
         takefocus=True
     )
-    button_aiguillage_2.pack(pady=10)
-    
-    # Légende pour l'aiguillage 2
-    label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
-    label_aiguillage_2.pack(pady=5)
+    button_aiguillage_2.grid(row=0, column=2)
+    label_aiguillage_2 = Label(section1, text="Aiguillage 2", font=("Arial", 14))
+    label_aiguillage_2.grid(row=1, column=2)
 
-    # Création du slider de vitesse
-    frame_slider = ttk.Frame(root)
-    frame_slider.pack(pady=10)
-
-    # Slider avec plage de -100% à +100%
+    # Slider vertical
+    frame_slider = section1
     vitesse_slider = ttk.Scale(
-        frame_slider, from_=-1, to=1, value=0, length=200, orient="horizontal",
+        frame_slider, from_=-1, to=1, value=0, length=200, orient="vertical",
         command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
         takefocus=True
     )
-    vitesse_slider.pack()
-    
+    vitesse_slider.grid(row=0, column=1)
+
     # Affichage de la valeur du slider
-    slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
-    slider_value_label.pack()
+    slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14), width=10)
+    slider_value_label.grid(row=1, column=1, padx=40)
 
     # Attacher un événement pour simuler un clic sur les boutons avec Entrée
-    button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images, state_aiguillage_1))  # Touche Entrée sur bouton1
-    button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images, state_aiguillage_2))  # Touche Entrée sur bouton2
+    button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1))  # Touche Entrée sur bouton1
+    button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2))  # Touche Entrée sur bouton2
 
     def handle_enter_on_slider(event):
         """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
@@ -169,7 +192,115 @@ def create_ui():
     # Initialisation de focus sur bouton1
     button_aiguillage_1.focus_set()
 
-    # Démarrage de la boucle principale de l'interface
+    # Création de la deuxième section
+    section2 = Frame(root, bg="white", borderwidth=1, relief="solid", height=300, width=740)
+    section2.grid(row=1, column=0, padx=margin, pady=margin)
+
+
+# Création de l'interface utilisateur
+def create_ui():
+    # global vitesse_slider  # Rendre la variable disponible dans la fonction d'événement
+    # global slider_value_label, current_cycle_index, cycle_vitesse_states
+
+    # root = Tk()
+    # root.title("Contrôle Aiguillages")
+    # root.geometry("1000x500")  # Taille adaptée pour les boutons et légendes
+
+    # # Chargement et redimensionnement des images
+    # max_height = 300
+    # img_position_1 = resize_image("images/position_1.png", max_height)
+    # img_position_2 = resize_image("images/position_2.png", max_height)
+    # img_position_3 = resize_image("images/position_3.png", max_height)
+    # img_position_4 = resize_image("images/position_4.png", max_height)
+
+    # images_list = [img_position_1, img_position_2]
+    # images_list2 = [img_position_3, img_position_4]
+
+    # # États initiaux des aiguillages
+    # state_aiguillage_1 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (13)
+    # state_aiguillage_2 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (8)
+
+    # # Bouton pour l'aiguillage 1
+    # button_aiguillage_1 = Button(
+    #     root, image=img_position_1,
+    #     command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1),
+    #     takefocus=True
+    # )
+    # button_aiguillage_1.place(x=100, y=100)
+
+    # # Bouton pour l'aiguillage 2
+    # button_aiguillage_2 = Button(
+    #     root, image=img_position_3,
+    #     command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2),
+    #     takefocus=True
+    # )
+    # button_aiguillage_2.place(x=600, y=100)
+
+
+    # # Légende pour l'aiguillage 1
+    # label_aiguillage_1 = Label(root, text="Aiguillage 1", font=("Arial", 14))
+    # label_aiguillage_1.place(x=150, y=210)
+
+    # # Légende pour l'aiguillage 2
+    # label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
+    # label_aiguillage_2.place(x=600, y=210)
+
+    # # Création du slider de vitesse
+    # frame_slider = ttk.Frame(root)
+    # frame_slider.place(x=300, y=200)
+
+    # # Slider avec plage de -100% à +100%
+    # vitesse_slider = ttk.Scale(
+    #     frame_slider, from_=-1, to=1, value=0, length=200, orient="vertical",
+    #     command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
+    #     takefocus=True
+    # )
+    # vitesse_slider.pack()
+    
+    # # Affichage de la valeur du slider
+    # slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
+    # slider_value_label.pack()
+
+    # # Attacher un événement pour simuler un clic sur les boutons avec Entrée
+    # button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1))  # Touche Entrée sur bouton1
+    # button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2))  # Touche Entrée sur bouton2
+
+    # def handle_enter_on_slider(event):
+    #     """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
+    #     global current_cycle_index, cycle_vitesse_states, current_cycle_index_old
+    #     # Passe au prochain état dans le cycle
+
+    #     if current_cycle_index == 0 and current_cycle_index_old == -1:
+    #         new_value = 1
+    #     elif (current_cycle_index == 1 or current_cycle_index == -1)  and current_cycle_index_old == 0:
+    #         new_value = 0
+    #     elif current_cycle_index == 0 and current_cycle_index_old == 1:
+    #         new_value = -1
+
+    #     vitesse_slider.set(new_value)  # Met à jour le slider
+    #     update_vitesse(vitesse_slider, slider_value_label)  # Met à jour l'interface
+
+    # vitesse_slider.bind('<Return>', handle_enter_on_slider)
+
+    # # Initialisation de focus sur bouton1
+    # button_aiguillage_1.focus_set()
+    # Configuration de la fenêtre principale
+    root = Tk()
+    root.title("Scada CyberSense Factory")
+    root.geometry("800x800")
+
+    # Configuration de la grille
+    root.rowconfigure(0, weight=1)
+    root.rowconfigure(1, weight=1)
+    root.columnconfigure(0, weight=1, minsize=800)  # Limite de la largeur maximale
+
+    # Marges et padding
+    margin = 20
+
+    # Appel de la fonction pour créer les frames
+    create_frames(root, margin)
+
+    # Lancement de l'application
     root.mainloop()
 
 # Exécution principale
