@@ -1,5 +1,6 @@
-from tkinter import Tk, Button, Label, Frame, Scale, PhotoImage
+from tkinter import Tk, Button, Label, Frame
 from PIL import Image, ImageTk  # Importation pour redimensionner les images
+Image.CUBIC = Image.BICUBIC
 from controlAiguillage_withoutArduino import activate_relay
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -40,7 +41,7 @@ def resize_image(file_path, max_height):
     # Redimensionnement si nécessaire
     if height > max_height:
         new_width = int(max_height * width / height)
-        image = image.resize((new_width+25, max_height), Image.Resampling.LANCZOS)
+        image = image.resize((new_width+40, max_height), Image.Resampling.LANCZOS)
 
     return ImageTk.PhotoImage(image)
 
@@ -113,16 +114,21 @@ def create_element_with_label(parent, element, element_args, text, row, column):
 
 def create_frames(root, margin):
     # Création de la première section
-    section1 = Frame(root, bg="white", height=420, width=740)
+    section1 = Frame(root, bg="white", height=370, width=740)
     section1.grid(row=0, column=0, padx=margin, pady=margin)
 
     # Configuration de la grille pour les éléments dans section1
     section1.columnconfigure((0, 1, 2), weight=1)  # 3 colonnes pour les éléments
     section1.rowconfigure(0, weight=9)  # Ligne pour les éléments
     section1.rowconfigure(1, weight=1)  # Ligne pour les labels
+    section1.rowconfigure(2, weight=1)  # Ligne pour les labels
 
+    # Étiquette de connexion
+    status_label = Label(section1, text="Tentative de connexion à l'Arduino...", font=("Arial", 18), fg="blue")
+    status_label.grid(row=0, column=0, columnspan=3, pady=25)
+    
     # Obtenez la hauteur dynamique de la section 1
-    max_height = 400
+    max_height = 300
     img_position_1 = resize_image("images/position_1.png", max_height)
     img_position_2 = resize_image("images/position_2.png", max_height)
     img_position_3 = resize_image("images/position_3.png", max_height)
@@ -141,9 +147,9 @@ def create_frames(root, margin):
         command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1),
         takefocus=True
     )
-    button_aiguillage_1.grid(row=0, column=0)
+    button_aiguillage_1.grid(row=1, column=0)
     label_aiguillage_1 = Label(section1, text="Aiguillage 1", font=("Arial", 14))
-    label_aiguillage_1.grid(row=1, column=0)
+    label_aiguillage_1.grid(row=2, column=0)
 
     # Bouton et légende pour l'aiguillage 2
     button_aiguillage_2 = Button(
@@ -151,9 +157,9 @@ def create_frames(root, margin):
         command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2),
         takefocus=True
     )
-    button_aiguillage_2.grid(row=0, column=2)
+    button_aiguillage_2.grid(row=1, column=2)
     label_aiguillage_2 = Label(section1, text="Aiguillage 2", font=("Arial", 14))
-    label_aiguillage_2.grid(row=1, column=2)
+    label_aiguillage_2.grid(row=2, column=2)
 
     # Slider vertical
     frame_slider = section1
@@ -162,11 +168,11 @@ def create_frames(root, margin):
         command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
         takefocus=True
     )
-    vitesse_slider.grid(row=0, column=1)
+    vitesse_slider.grid(row=1, column=1)
 
     # Affichage de la valeur du slider
     slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14), width=10)
-    slider_value_label.grid(row=1, column=1, padx=40)
+    slider_value_label.grid(row=2, column=1, padx=40)
 
     # Attacher un événement pour simuler un clic sur les boutons avec Entrée
     button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1))  # Touche Entrée sur bouton1
@@ -193,9 +199,27 @@ def create_frames(root, margin):
     button_aiguillage_1.focus_set()
 
     # Création de la deuxième section
-    section2 = Frame(root, bg="white", borderwidth=1, relief="solid", height=300, width=740)
+    section2 = Frame(root, bg="white", height=300, width=740)
     section2.grid(row=1, column=0, padx=margin, pady=margin)
 
+    # Configuration pour afficher 4 meters alignés horizontalement
+    section2.columnconfigure((0, 1, 2, 3), weight=1)
+    section2.rowconfigure(0, weight=1)
+
+
+    meter_styles = ["success", "info", "danger"]
+    meter_text = ["Batterie", "Indice météo", "Température"]
+    meter_score_default = [79, 34, 55]
+    meter_text_right = ["%", "/100", "°C"]
+
+    for i in range(3):
+        meter = ttk.Meter(
+            section2, metersize=275, amounttotal=100, amountused=meter_score_default[i], 
+            subtext=meter_text[i], subtextfont="-size 20", textright=meter_text_right[i],
+            bootstyle=meter_styles[i], 
+            interactive=True
+        )
+        meter.grid(row=0, column=i, sticky="nsew", padx=5, pady=5)
 
 # Création de l'interface utilisateur
 def create_ui():
@@ -292,6 +316,7 @@ def create_ui():
     # Configuration de la grille
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=1)
+    root.rowconfigure(2, weight=1)
     root.columnconfigure(0, weight=1, minsize=800)  # Limite de la largeur maximale
 
     # Marges et padding
