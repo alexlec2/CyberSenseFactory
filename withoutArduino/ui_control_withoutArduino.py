@@ -88,7 +88,6 @@ def update_vitesse(slider, slider_value_label):
 def bouton_clicked(button, relays, images, state):
     """Fonction appelée lorsqu'un bouton est cliqué (ou pressé avec Enter)."""
     # Alterne l'image entre position_1 et position_2
-    print(images)
     new_state = 1 - state["image"]
     button.config(image=images[new_state])  # Met à jour l'image sur le bouton
     state["image"] = new_state
@@ -198,6 +197,12 @@ def create_frames(root, margin):
     # Initialisation de focus sur bouton1
     button_aiguillage_1.focus_set()
 
+    # Liste des éléments d'interface à activer après connexion
+    ui_elements = [button_aiguillage_1, button_aiguillage_2, vitesse_slider]
+
+    # Tentative de connexion
+    root.after(100, lambda: try_connecting(status_label, ui_elements, root))
+
     # Création de la deuxième section
     section2 = Frame(root, bg="white", height=300, width=740)
     section2.grid(row=1, column=0, padx=margin, pady=margin)
@@ -223,92 +228,6 @@ def create_frames(root, margin):
 
 # Création de l'interface utilisateur
 def create_ui():
-    # global vitesse_slider  # Rendre la variable disponible dans la fonction d'événement
-    # global slider_value_label, current_cycle_index, cycle_vitesse_states
-
-    # root = Tk()
-    # root.title("Contrôle Aiguillages")
-    # root.geometry("1000x500")  # Taille adaptée pour les boutons et légendes
-
-    # # Chargement et redimensionnement des images
-    # max_height = 300
-    # img_position_1 = resize_image("images/position_1.png", max_height)
-    # img_position_2 = resize_image("images/position_2.png", max_height)
-    # img_position_3 = resize_image("images/position_3.png", max_height)
-    # img_position_4 = resize_image("images/position_4.png", max_height)
-
-    # images_list = [img_position_1, img_position_2]
-    # images_list2 = [img_position_3, img_position_4]
-
-    # # États initiaux des aiguillages
-    # state_aiguillage_1 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (13)
-    # state_aiguillage_2 = {"image": 0, "relay": 0}  # image 0 = position_1, relay 0 = premier relais (8)
-
-    # # Bouton pour l'aiguillage 1
-    # button_aiguillage_1 = Button(
-    #     root, image=img_position_1,
-    #     command=lambda: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1),
-    #     takefocus=True
-    # )
-    # button_aiguillage_1.place(x=100, y=100)
-
-    # # Bouton pour l'aiguillage 2
-    # button_aiguillage_2 = Button(
-    #     root, image=img_position_3,
-    #     command=lambda: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2),
-    #     takefocus=True
-    # )
-    # button_aiguillage_2.place(x=600, y=100)
-
-
-    # # Légende pour l'aiguillage 1
-    # label_aiguillage_1 = Label(root, text="Aiguillage 1", font=("Arial", 14))
-    # label_aiguillage_1.place(x=150, y=210)
-
-    # # Légende pour l'aiguillage 2
-    # label_aiguillage_2 = Label(root, text="Aiguillage 2", font=("Arial", 14))
-    # label_aiguillage_2.place(x=600, y=210)
-
-    # # Création du slider de vitesse
-    # frame_slider = ttk.Frame(root)
-    # frame_slider.place(x=300, y=200)
-
-    # # Slider avec plage de -100% à +100%
-    # vitesse_slider = ttk.Scale(
-    #     frame_slider, from_=-1, to=1, value=0, length=200, orient="vertical",
-    #     command=lambda val: update_vitesse(vitesse_slider, slider_value_label),  # Mise à jour du label
-    #     takefocus=True
-    # )
-    # vitesse_slider.pack()
-    
-    # # Affichage de la valeur du slider
-    # slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14))
-    # slider_value_label.pack()
-
-    # # Attacher un événement pour simuler un clic sur les boutons avec Entrée
-    # button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_1, relays[0], images_list, state_aiguillage_1))  # Touche Entrée sur bouton1
-    # button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(button_aiguillage_2, relays[1], images_list2, state_aiguillage_2))  # Touche Entrée sur bouton2
-
-    # def handle_enter_on_slider(event):
-    #     """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
-    #     global current_cycle_index, cycle_vitesse_states, current_cycle_index_old
-    #     # Passe au prochain état dans le cycle
-
-    #     if current_cycle_index == 0 and current_cycle_index_old == -1:
-    #         new_value = 1
-    #     elif (current_cycle_index == 1 or current_cycle_index == -1)  and current_cycle_index_old == 0:
-    #         new_value = 0
-    #     elif current_cycle_index == 0 and current_cycle_index_old == 1:
-    #         new_value = -1
-
-    #     vitesse_slider.set(new_value)  # Met à jour le slider
-    #     update_vitesse(vitesse_slider, slider_value_label)  # Met à jour l'interface
-
-    # vitesse_slider.bind('<Return>', handle_enter_on_slider)
-
-    # # Initialisation de focus sur bouton1
-    # button_aiguillage_1.focus_set()
-    # Configuration de la fenêtre principale
     root = Tk()
     root.title("Scada CyberSense Factory")
     root.geometry("800x800")
