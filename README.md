@@ -24,6 +24,10 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
    python3 -m venv ./venv
    source venv/bin/activate
    pip install -r requirements.txt
+
+   # On mac
+   brew install python-tk
+   pip install tk
    ```
    Avec Windows remplacer "source venv/bin/activate" par :
    ```bash
@@ -32,14 +36,39 @@ Ce projet utilise Python pour communiquer avec une carte Arduino via la biblioth
 
 ---
 
-## Utilisation
+## Utilisation Code
 
-1. Lancez le script Python :
+Il existe 3 cas d'utilisation pour controler les éléments electroniques via l'activation des relais:
+- via le keyboard avec le code `keyboard_control.py` avec l'arduino connecté
 ```bash
-python3 main.py
+python3 keyboard_control.py
 ```
 
-2. Appuyez sur les touches définies pour contrôler les fonctionnalités.
+- via l'interface graphique avec l'arduino connecté (version finale) avec `ui_control.py`
+```bash
+python3 ui_control.py
+```
+
+- via l'interface graphique sans l'arduino connecté (pour faire des tests) avec `withoutArduino/ui_control_withoutArduino.py`
+```bash
+cd withoutArduino
+python3 ui_control_withoutArduino.py
+```
+- via le keyboard sans l'arduino connecté (pour faire des tests) avec `withoutArduino/keyboard_control_withoutArduino.py`
+```bash
+cd withoutArduino
+python3 keyboard_control_withoutArduino.py
+```
+
+---
+
+
+## Utilisation Focus
+
+La touche <Tab> permet de naviguer entre les trois élements (les 2 boutons et le slider).   
+Une fois le focus dessus, la touche <Return> ou "Entrée" permet de changer sa valeur.  
+Par défaut le focus est de base sur le bouton n1 (Aiguillage 1).  
+
 
 ---
 
@@ -112,7 +141,9 @@ Relai 2 connecté à l'output 12 de l'arduino et le - de la batterie.
 
 
 
+## Build exe
+```bash
+pyinstaller --onefile --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_3.png;images/" --add-data "images/position_4.png;images/" -w ui_control.py --name Scada --icon images/icon.png
 
-
-
-
+pyinstaller --onefile --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_3.png;images/" --add-data "images/position_4.png;images/" -w ui_control_withoutArduino.py --name ScadaWithoutArduino --icon images/icon.png
+```
