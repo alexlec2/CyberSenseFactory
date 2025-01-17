@@ -128,7 +128,7 @@ def create_element_with_label(parent, element, element_args, text, row, column):
 
     return widget, label
 
-def create_frames(root, margin):
+def create_scada_frames(root, margin):
     # Création de la première section
     section1 = Frame(root, bg="white", height=370, width=740)
     section1.grid(row=0, column=0, padx=margin, pady=margin)
@@ -259,7 +259,7 @@ def create_ui():
     margin = 20
 
     # Appel de la fonction pour créer les frames
-    create_frames(root, margin)
+    create_scada_frames(root, margin)
 
     # Lancement de l'application
     root.mainloop()

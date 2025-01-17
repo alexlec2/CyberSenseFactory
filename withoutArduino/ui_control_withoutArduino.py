@@ -1,33 +1,34 @@
-from tkinter import Tk, IntVar
-import ttkbootstrap as ttk
+from tkinter import Tk
 from ttkbootstrap.constants import *
-from tkinterElements import create_frames
-from tkinter import Frame, Button, Menu, Label, StringVar
+from tkinterElements import create_scada_frames, create_config_frame
+from tkinter import Frame, Button
+import json
 
 # Initialisation
-board = None
+DB_PATH = "db/relays.txt"
 time_sleep = 0.5  # Durée d'activation du relais (en secondes)
-relays = [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
 
-def toggle_view(scada_frame, buttons_frame):
+# Chargement des relais depuis le fichier
+def load_relays(file_path):
+    try:
+        with open(file_path, "r") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Si le fichier n'existe pas ou est corrompu, utiliser une valeur par défaut
+        return [[13, 12], [8, 7], [4, 2]]
+
+# Charger les relais depuis le fichier
+relays = load_relays(DB_PATH)
+
+def toggle_view(scada_frame, config_frame):
     """Permet de basculer entre la page de base et la page des MenuButton."""
 
     if scada_frame.winfo_viewable():
         scada_frame.pack_forget()
-        buttons_frame.pack(fill='both', expand=True)
+        config_frame.pack(fill='both', expand=True)
     else:
-        buttons_frame.pack_forget()
+        config_frame.pack_forget()
         scada_frame.pack(fill='both', expand=True)
-
-def update_relays(index, new_value):
-    """Met à jour la variable globale relays en fonction de l'index et de la nouvelle valeur."""
-    row, col = divmod(index, 2)
-    relays[row][col] = new_value
-    print(f"Relays updated: {relays}")  # Debug: Affiche les relais mis à jour
-
-def update_label(label, value):
-    print(value)
-    label.config(text=f'Relai {value}')
 
 # Création de l'interface utilisateur
 def create_ui():
@@ -45,57 +46,32 @@ def create_ui():
     margin = 20
 
     # Frame de la page de base
-    scada_frame = Frame(root)
+    scada_frame = Frame(root, bg="white")
     scada_frame.pack(fill='both', expand=True)
 
     # Appel de la fonction pour créer les frames
-    create_frames(scada_frame, relays, margin, time_sleep)
+    create_scada_frames(scada_frame, relays, margin, time_sleep)
 
     # Frame pour la page avec les MenuButton
-    buttons_frame = Frame(root, bg="white", height=800, width=800)
-    buttons_frame.pack(fill='both', expand=True)
+    config_frame = Frame(root, bg="white")
+    config_frame.pack(fill='both', expand=True)
 
-    list_relays_elements = ["A1 Relai 1", "A1 Relai 2", "A2 Relai 1", "A2 Relai 2", "Train Relai 1", "Train Relai 2"]
-    styles = ["primary", "primary", "info", "info", "danger", "danger"]
-    default_values = [13, 12, 8, 7, 4, 2]
-    relay= [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
-    for index, option in enumerate(list_relays_elements):
-        # Créer un MenuButton pour chaque option
-        mb = ttk.Menubutton(buttons_frame, text=option, bootstyle=styles[index])
-        mb.pack(pady=5, padx=20, anchor="center")
-
-        # Associer un label à chaque MenuButton avec la valeur par défaut
-        label = Label(buttons_frame, text=f"Relai {default_values[index]}", font=("Arial", 12))
-        label.pack(pady=2)
-
-        # Ajouter un menu déroulant pour changer la valeur
-        menu = Menu(mb, tearoff=0)
-        default_value = IntVar(value=default_values[index])
-
-        def make_update_function(lbl, var, idx):
-            def update_label():
-                lbl.config(text=f"Relai {var.get()}")
-                update_relays(idx, var.get())
-            return update_label
-
-        for value in [13, 12, 8, 7, 4, 2]:
-            menu.add_radiobutton(label=str(value), variable=default_value, value=value, command=make_update_function(label, default_value, index))
-
-        mb["menu"] = menu
+    board = None
+    create_config_frame(config_frame, relays, DB_PATH, board)
 
     # Bouton pour basculer les pages
-    switch_button = Button(
+    switch_frame_button = Button(
         root, 
         text="\u2630",  # Symbole d'un menu (☰)
         bg="white",
         activebackground="lightgray",
         width=2,  # Correspond à 20 pixels environ pour la largeur en mode "grid"
         height=1,  # Pour un aspect carré
-        command=lambda: toggle_view(scada_frame, buttons_frame)
+        command=lambda: toggle_view(scada_frame, config_frame)
     )
-    switch_button.place(relx=1, rely=0, x=-30, y=10, anchor="ne")
+    switch_frame_button.place(relx=1, rely=0, x=-30, y=10, anchor="ne")
 
-    scada_frame.pack_forget()
+    config_frame.pack_forget()
 
     # Lancement de l'application
     root.mainloop()

@@ -1,7 +1,9 @@
 import ttkbootstrap as ttk
-from tkinter import Button, Label, Frame
+from tkinter import IntVar
+from tkinter import Button, Label, Frame, Menu, Label
 from PIL import Image, ImageTk  
 Image.CUBIC = Image.BICUBIC
+import json
 
 import sys, os
 from controlAiguillage_withoutArduino import activate_relay
@@ -89,16 +91,16 @@ def create_element_with_label(parent, element, element_args, text, row, column):
 
     return widget, label
 
-def create_frames(scada_frame, relays, margin, time_sleep):
+def create_scada_frames(scada_frame, relays, margin, time_sleep):
     global current_cycle_index, current_cycle_index_old
 
     # Création de la première section
     section1 = Frame(scada_frame, bg="white", height=370, width=740)
-    section1.grid(row=0, column=0, padx=margin, pady=margin)
+    section1.grid(row=0, column=0, padx=(70, margin), pady=margin)
 
     # Configuration de la grille pour les éléments dans section1
     section1.columnconfigure((0, 1, 2), weight=1)  # 3 colonnes pour les éléments
-    section1.rowconfigure(0, weight=9)  # Ligne pour les éléments
+    section1.rowconfigure(0, weight=1)  # Ligne pour les éléments
     section1.rowconfigure(1, weight=1)  # Ligne pour les labels
     section1.rowconfigure(2, weight=1)  # Ligne pour les labels
 
@@ -164,7 +166,7 @@ def create_frames(scada_frame, relays, margin, time_sleep):
 
     # Création de la deuxième section
     section2 = Frame(scada_frame, bg="white", height=300, width=740)
-    section2.grid(row=1, column=0, padx=margin, pady=margin)
+    section2.grid(row=1, column=0, padx=(70, margin), pady=margin)
 
     # Configuration pour afficher 4 meters alignés horizontalement
     section2.columnconfigure((0, 1, 2, 3), weight=1)
@@ -184,6 +186,92 @@ def create_frames(scada_frame, relays, margin, time_sleep):
             interactive=True
         )
         meter.grid(row=0, column=i, sticky="nsew", padx=5, pady=5)
+
+# Sauvegarde des relais dans le fichier
+def save_relays(file_path, relays):
+    with open(file_path, "w") as file:
+        json.dump(relays, file)
+
+def update_relays(index, new_value, relays, DB_PATH):
+    """Met à jour la variable globale relays et enregistre les changements dans un fichier."""
+    row, col = divmod(index, 2)
+    relays[row][col] = new_value
+    save_relays(DB_PATH, relays)  # Sauvegarder la nouvelle valeur dans le fichier
+    print(f"Relays updated: {relays}")  # Debug : Affiche les relais mis à jour
+
+def activer_relai(var):
+    print(f"Relai {var.get()}")
+
+def create_config_frame(config_frame, relays, DB_PATH, board):
+    """
+    Crée un tableau de configuration avec deux colonnes et trois lignes,
+    chaque cellule contenant un Menubutton, son Label, et un bouton d'action stylisé associé.
+    """
+    # Définition des éléments et styles
+    list_relays_elements = ["Aiguillage1 Relai n°1", "Aiguillage1 Relai n°2", "Aiguillage2 Relai n°1", "Aiguillage2 Relai n°2", "Train Relai n°1", "Train Relai n°2"]
+    styles = ["primary", "primary", "info", "info", "danger", "danger"]
+    default_values = [val for sublist in relays for val in sublist]
+
+    # Configuration de la grille
+    rows, cols = 3, 2  # 3 lignes et 2 colonnes
+    for r in range(rows):
+        config_frame.rowconfigure(r, weight=0)
+    for c in range(cols):
+        config_frame.columnconfigure(c, weight=1)
+
+    for index, option in enumerate(list_relays_elements):
+        row, col = divmod(index, 2)  # Calculer la ligne et la colonne à partir de l'index
+
+        # Créer une frame pour regrouper les widgets
+        widget_frame = Frame(config_frame)
+        widget_frame.grid(row=row, column=col, padx=10, pady=50, sticky="n")
+
+        # Ajouter le Menubutton dans la frame
+        mb = ttk.Menubutton(widget_frame, text=option, bootstyle=styles[index])
+        mb.pack()
+
+        # Ajouter le Label juste en dessous dans la même frame
+        label = Label(widget_frame, text=f"Relai séléctionné : {default_values[index]}", font=("Arial", 12))
+        label.pack()
+
+        # Ajouter un bouton d'action stylisé en dessous du Label
+        action_button = ttk.Button(
+            widget_frame,
+            text=f"Test Relai {default_values[index]}",
+            bootstyle=styles[index],
+            command=lambda var=default_values[index]: print(f"Relai {var}"),
+        )
+        action_button.pack(pady=5)
+
+        # Ajouter un menu déroulant pour changer la valeur
+        menu = Menu(mb, tearoff=0)
+        default_value = IntVar(value=default_values[index])
+
+        def make_update_function(lbl, var, idx, btn):
+            def update_label_and_button():
+                # Met à jour le label
+                lbl.config(text=f"Relai séléctionné : {var.get()}")
+                # Met à jour le bouton
+                btn.config(
+                    text=f"Test Relai {var.get()}",
+                    command=lambda: activer_relai(var),
+                )
+                # Met à jour la valeur du relai
+                update_relays(idx, var.get(), relays, DB_PATH)
+
+            return update_label_and_button
+
+        # Options dans le menu déroulant
+        for value in [13, 12, 8, 7, 4, 2]:
+            menu.add_radiobutton(
+                label=str(value),
+                variable=default_value,
+                value=value,
+                command=make_update_function(label, default_value, index, action_button),
+            )
+
+        mb["menu"] = menu
+
 
 # Fonction pour définir path data pyinstaller
 def resource_path(relative_path):
