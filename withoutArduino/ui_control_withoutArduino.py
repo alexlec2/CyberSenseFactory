@@ -19,6 +19,12 @@ def toggle_view(scada_frame, buttons_frame):
         buttons_frame.pack_forget()
         scada_frame.pack(fill='both', expand=True)
 
+def update_relays(index, new_value):
+    """Met à jour la variable globale relays en fonction de l'index et de la nouvelle valeur."""
+    row, col = divmod(index, 2)
+    relays[row][col] = new_value
+    print(f"Relays updated: {relays}")  # Debug: Affiche les relais mis à jour
+
 def update_label(label, value):
     print(value)
     label.config(text=f'Relai {value}')
@@ -52,13 +58,13 @@ def create_ui():
     list_relays_elements = ["A1 Relai 1", "A1 Relai 2", "A2 Relai 1", "A2 Relai 2", "Train Relai 1", "Train Relai 2"]
     styles = ["primary", "primary", "info", "info", "danger", "danger"]
     default_values = [13, 12, 8, 7, 4, 2]
-
+    relay= [[13, 12], [8, 7], [4, 2]]  # Duo d'input pour les relais
     for index, option in enumerate(list_relays_elements):
         # Créer un MenuButton pour chaque option
         mb = ttk.Menubutton(buttons_frame, text=option, bootstyle=styles[index])
         mb.pack(pady=5, padx=20, anchor="center")
 
-        # Associer un label à chaque MenuButton
+        # Associer un label à chaque MenuButton avec la valeur par défaut
         label = Label(buttons_frame, text=f"Relai {default_values[index]}", font=("Arial", 12))
         label.pack(pady=2)
 
@@ -66,13 +72,14 @@ def create_ui():
         menu = Menu(mb, tearoff=0)
         default_value = IntVar(value=default_values[index])
 
-        def make_update_function(lbl, var):
+        def make_update_function(lbl, var, idx):
             def update_label():
                 lbl.config(text=f"Relai {var.get()}")
+                update_relays(idx, var.get())
             return update_label
 
-        for value in default_values:
-            menu.add_radiobutton(label=str(value), variable=default_value, value=value, command=make_update_function(label, default_value))
+        for value in [13, 12, 8, 7, 4, 2]:
+            menu.add_radiobutton(label=str(value), variable=default_value, value=value, command=make_update_function(label, default_value, index))
 
         mb["menu"] = menu
 
