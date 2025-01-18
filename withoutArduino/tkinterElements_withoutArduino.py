@@ -79,30 +79,39 @@ def update_vitesse(slider, slider_value_label, relays, meters):
         return
 
     # Lancement des mises à jour progressives
-    animate_meter_change(meter_vitesse, target_vitesse, duration=1000)
-    animate_meter_change(meter_consommation, target_consommation, duration=500)
+    animate_meter_change(meter_vitesse, target_vitesse, step_duration=30)
+    animate_meter_change(meter_consommation, target_consommation, step_duration=20)
 
 
-def animate_meter_change(meter, target_value, duration=100):
+def animate_meter_change(meter, target_value, step_duration):
     """
-    Mise à jour progressive d'un meter vers une valeur cible sur une durée définie.
+    Mise à jour progressive d'un meter vers une valeur cible en 1 seconde.
     :param meter: Meter à mettre à jour.
     :param target_value: Valeur cible à atteindre.
-    :param duration: Durée totale de l'animation en millisecondes.
     """
+    # Valeur actuelle du meter
     start_value = meter["amountused"]
-    step_count = 30  # Nombre d'étapes pour l'animation
-    step_duration = duration // step_count
+    
+    # Nombre d'étapes fixes et calcul du changement par étape
+    step_count = 20
     step_size = (target_value - start_value) / step_count
+    # step_duration = 33  # 1000ms / 30 steps ≈ 33ms par étape
 
     def update_step(current_step):
+        # Calcul de la nouvelle valeur du meter pour l'étape actuelle
         new_value = start_value + step_size * current_step
-        meter.configure(amountused=int(new_value))  # Mise à jour du meter
+
+        # Arrêter l'animation lorsque nous atteignons ou dépassons la valeur cible
         if current_step < step_count:
+            meter.configure(amountused=int(new_value))
             meter.after(step_duration, update_step, current_step + 1)
+        else:
+            # Assurez-vous que la valeur cible est atteinte
+            meter.configure(amountused=int(target_value))
 
     # Démarre l'animation
     update_step(0)
+
 
 
 def bouton_clicked(board, button, relays, images, state, time_sleep):
@@ -185,7 +194,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(scada_frame, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep))  # Touche Entrée sur bouton1
     button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(scada_frame, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep))  # Touche Entrée sur bouton2
 
-    def handle_enter_on_slider():
+    def handle_enter_on_slider(event):
         """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
         global current_cycle_index, cycle_vitesse_states, current_cycle_index_old
         # Passe au prochain état dans le cycle
