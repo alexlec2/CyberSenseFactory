@@ -28,7 +28,7 @@ def toggle_view(scada_frame, config_frame):
         config_frame.pack(fill='both', expand=True)
     else:
         config_frame.pack_forget()
-        scada_frame.pack(fill='both', expand=True)
+        scada_frame.pack(fill='y', expand=True)
 
 # Création de l'interface utilisateur
 def create_ui():
@@ -47,7 +47,7 @@ def create_ui():
 
     # Frame de la page de base
     scada_frame = Frame(root, bg="white")
-    scada_frame.pack(fill='both', expand=True)
+    scada_frame.pack(fill='y', expand=True)
 
     # Appel de la fonction pour créer les frames
     create_scada_frames(scada_frame, relays, margin, time_sleep)
