@@ -120,17 +120,6 @@ def bouton_clicked(board, button, relays, images, state, time_sleep):
     # Alterne entre les deux relais
     state["relay"] = 1 - state["relay"]
 
-def create_element_with_label(parent, element, element_args, text, row, column):
-    # Créer l'élément
-    widget = element(parent, **element_args)
-    widget.grid(row=row, column=column)
-
-    # Créer le label associé
-    label = Label(parent, text=text, bg="white")
-    label.grid(row=row + 1, column=column)
-
-    return widget, label
-
 def create_scada_frames(scada_frame, relays, margin, time_sleep):
     global current_cycle_index, current_cycle_index_old
 
@@ -196,7 +185,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(scada_frame, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep))  # Touche Entrée sur bouton1
     button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(scada_frame, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep))  # Touche Entrée sur bouton2
 
-    def handle_enter_on_slider(event):
+    def handle_enter_on_slider():
         """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
         global current_cycle_index, cycle_vitesse_states, current_cycle_index_old
         # Passe au prochain état dans le cycle

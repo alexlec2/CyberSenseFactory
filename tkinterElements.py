@@ -120,17 +120,6 @@ def bouton_clicked(board, button, relays, images, state, time_sleep):
     # Alterne entre les deux relais
     state["relay"] = 1 - state["relay"]
 
-def create_element_with_label(parent, element, element_args, text, row, column):
-    # Créer l'élément
-    widget = element(parent, **element_args)
-    widget.grid(row=row, column=column)
-
-    # Créer le label associé
-    label = Label(parent, text=text, bg="white")
-    label.grid(row=row + 1, column=column)
-
-    return widget, label
-
 def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     global current_cycle_index, current_cycle_index_old
 

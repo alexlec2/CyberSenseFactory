@@ -1,5 +1,4 @@
-from pyfirmata2 import Arduino, util
-import serial.tools.list_ports
+from pyfirmata2 import Arduino
 
 def connect_to_arduino(name):
     """Établit la connexion à l'Arduino."""
