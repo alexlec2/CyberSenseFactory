@@ -3,7 +3,7 @@ from tkinter import IntVar
 from tkinter import Button, Label, Frame, Menu, Label
 from PIL import Image, ImageTk  
 Image.CUBIC = Image.BICUBIC
-import json, random
+import json, random, time
 
 import sys, os
 from controlAiguillage import activate_relay
@@ -246,8 +246,12 @@ def update_relays(index, new_value, relays, DB_PATH):
     save_relays(DB_PATH, relays)  # Sauvegarder la nouvelle valeur dans le fichier
     print(f"Relays updated: {relays}")  # Debug : Affiche les relais mis à jour
 
-def activer_relai(var):
-    print(f"Relai {var.get()}")
+def activer_relai(board, var):
+    print(f"Relai {var} a été activé.")
+    board.digital[var].write(1)
+    time.sleep(1)
+    board.digital[var].write(0)
+    print(f"Relai {var} a été activé.")
 
 def create_config_frame(config_frame, relays, DB_PATH, board):
     """
@@ -286,7 +290,7 @@ def create_config_frame(config_frame, relays, DB_PATH, board):
             widget_frame,
             text=f"Test Relai {default_values[index]}",
             bootstyle=styles[index],
-            command=lambda var=default_values[index]: print(f"Relai {var}"),
+            command=lambda var=default_values[index]: activer_relai(board, var),
         )
         action_button.pack(pady=5)
 
@@ -301,7 +305,7 @@ def create_config_frame(config_frame, relays, DB_PATH, board):
                 # Met à jour le bouton
                 btn.config(
                     text=f"Test Relai {var.get()}",
-                    command=lambda: activer_relai(var),
+                    command=lambda: activer_relai(board, var.get()),
                 )
                 # Met à jour la valeur du relai
                 update_relays(idx, var.get(), relays, DB_PATH)
