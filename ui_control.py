@@ -32,7 +32,7 @@ def toggle_view(scada_frame, config_frame):
         config_frame.pack_forget()
         scada_frame.pack(fill='y', expand=True)
 
-def try_connecting(status_label, ui_elements, root):
+def try_connecting(status_label, ui_elements, root, switch_frame_button):
     """Essaye de connecter à l'Arduino toutes les secondes jusqu'à ce qu'il réussisse."""
     global board
     name_arduino = "UNO WiFi R4"
@@ -48,6 +48,7 @@ def try_connecting(status_label, ui_elements, root):
         # Activer les boutons et le slider
         for element in ui_elements:
             element.config(state=NORMAL)
+        switch_frame_button.config(state=NORMAL)
 
 # Création de l'interface utilisateur
 def create_ui():
@@ -85,7 +86,8 @@ def create_ui():
         activebackground="lightgray",
         width=2,  # Correspond à 20 pixels environ pour la largeur en mode "grid"
         height=1,  # Pour un aspect carré
-        command=lambda: toggle_view(scada_frame, config_frame)
+        command=lambda: toggle_view(scada_frame, config_frame),
+        state="disabled"
     )
     switch_frame_button.place(relx=1, rely=0, x=-30, y=10, anchor="ne")
     ui_elements.append(switch_frame_button)
@@ -93,7 +95,7 @@ def create_ui():
     config_frame.pack_forget()
 
     # Tentative de connexion
-    root.after(100, lambda: try_connecting(status_label, ui_elements, root))
+    root.after(100, lambda: try_connecting(status_label, ui_elements, root, switch_frame_button))
 
     # Lancement de l'application
     root.mainloop()
