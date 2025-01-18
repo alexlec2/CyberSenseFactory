@@ -79,11 +79,11 @@ def update_vitesse(slider, slider_value_label, relays, meters):
         return
 
     # Lancement des mises à jour progressives
-    animate_meter_change(meter_vitesse, target_vitesse, duration=2000)
-    animate_meter_change(meter_consommation, target_consommation, duration=2000)
+    animate_meter_change(meter_vitesse, target_vitesse, duration=1000)
+    animate_meter_change(meter_consommation, target_consommation, duration=500)
 
 
-def animate_meter_change(meter, target_value, duration=2000):
+def animate_meter_change(meter, target_value, duration=100):
     """
     Mise à jour progressive d'un meter vers une valeur cible sur une durée définie.
     :param meter: Meter à mettre à jour.
@@ -91,7 +91,7 @@ def animate_meter_change(meter, target_value, duration=2000):
     :param duration: Durée totale de l'animation en millisecondes.
     """
     start_value = meter["amountused"]
-    step_count = 20  # Nombre d'étapes pour l'animation
+    step_count = 30  # Nombre d'étapes pour l'animation
     step_duration = duration // step_count
     step_size = (target_value - start_value) / step_count
 
@@ -226,7 +226,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     # Définition des meters
     meter_styles = ["warning", "info", "success"]
     meter_text = ["Consommation", "Capacité", "Vitesse"]
-    meter_score_default = [100, random.randint(0, 10000), 0]  # Valeurs initiales
+    meter_score_default = [100, random.randint(3000, 10000), 0]  # Valeurs initiales
     meter_max_value = [1000, 10000, 300]
     meter_text_right = ["kW/h", "/10000", "km/h"]
     meter_stripethickness = [10, 0, 2]
