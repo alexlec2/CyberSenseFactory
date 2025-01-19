@@ -133,7 +133,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     global current_cycle_index, current_cycle_index_old
 
     # Création de la première section (identique)
-    section1 = Frame(scada_frame, bg="white", height=370, width=740)
+    section1 = Frame(scada_frame, bg="white", height=320, width=780)
     section1.grid(row=0, column=0, padx=margin, pady=margin)
 
     # Configuration de la grille pour les éléments dans section1
@@ -147,7 +147,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     status_label.grid(row=0, column=0, columnspan=3, pady=25)
     
     # Initialisation des images et états (identique)
-    max_height = 300
+    max_height = 200
     img_position_1 = resize_image("images/position_1.png", max_height)
     img_position_2 = resize_image("images/position_2.png", max_height)
     img_position_3 = resize_image("images/position_3.png", max_height)
@@ -215,7 +215,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     button_aiguillage_1.focus_set()
 
     # Création de la deuxième section (modifiée pour inclure les plages)
-    section2 = Frame(scada_frame, bg="white", height=300, width=740)
+    section2 = Frame(scada_frame, bg="white", height=260, width=780)
     section2.grid(row=1, column=0, padx=margin, pady=margin)
 
     section2.columnconfigure((0, 1, 2, 3), weight=1)
@@ -232,8 +232,8 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     meters = []  # Liste pour les meters, mise à jour avec le slider
     for i in range(3):
         meter = Meter(
-            section2, metersize=275, amounttotal=meter_max_value[i], amountused=meter_score_default[i], 
-            subtext=meter_text[i], subtextfont="-size 20", textright=meter_text_right[i],
+            section2, metersize=200, amounttotal=meter_max_value[i], amountused=meter_score_default[i], 
+            subtext=meter_text[i], subtextfont="-size 10", textright=meter_text_right[i],
             bootstyle=meter_styles[i], 
             metertype="semi",
             interactive=False,
@@ -356,6 +356,6 @@ def resize_image(file_path, max_height):
     # Redimensionnement si nécessaire
     if height > max_height:
         new_width = int(max_height * width / height)
-        image = image.resize((new_width+40, max_height), Image.Resampling.LANCZOS)
+        image = image.resize((new_width+20, max_height), Image.Resampling.LANCZOS)
 
     return ImageTk.PhotoImage(image)
