@@ -33,7 +33,7 @@ def toggle_view(scada_frame, config_frame):
 def create_ui():
     root = Tk()
     root.title("Scada CyberSense Factory")
-    root.geometry("800x800")
+    root.geometry("800x600")
 
     # Configuration de la grille
     root.rowconfigure(0, weight=1)
@@ -42,7 +42,7 @@ def create_ui():
     root.columnconfigure(0, weight=1, minsize=800)  # Limite de la largeur maximale
 
     # Marges et padding
-    margin = 20
+    margin = 10
 
     # Frame de la page de base
     scada_frame = Frame(root, bg="white")
