@@ -147,7 +147,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     status_label.grid(row=0, column=0, columnspan=3, pady=25)
     
     # Initialisation des images et états (identique)
-    max_height = 200
+    max_height = 250
     img_position_1 = resize_image("images/position_1.png", max_height)
     img_position_2 = resize_image("images/position_2.png", max_height)
     img_position_3 = resize_image("images/position_3.png", max_height)
