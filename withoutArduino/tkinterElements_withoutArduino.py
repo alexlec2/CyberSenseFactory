@@ -79,11 +79,11 @@ def update_vitesse(slider, slider_value_label, relays, meters):
         return
 
     # Lancement des mises à jour progressives
-    animate_meter_change(meter_vitesse, target_vitesse, step_duration=30)
-    animate_meter_change(meter_consommation, target_consommation, step_duration=20)
+    animate_meter_change(meter_vitesse, target_vitesse, slider, step_duration=30)
+    animate_meter_change(meter_consommation, target_consommation, slider, step_duration=20)
 
 
-def animate_meter_change(meter, target_value, step_duration):
+def animate_meter_change(meter, target_value, slider, step_duration):
     """
     Mise à jour progressive d'un meter vers une valeur cible en 1 seconde.
     :param meter: Meter à mettre à jour.
@@ -91,9 +91,10 @@ def animate_meter_change(meter, target_value, step_duration):
     """
     # Valeur actuelle du meter
     start_value = meter["amountused"]
+
     
     # Nombre d'étapes fixes et calcul du changement par étape
-    step_count = 20
+    step_count = 15
     step_size = (target_value - start_value) / step_count
     # step_duration = 33  # 1000ms / 30 steps ≈ 33ms par étape
 
@@ -110,7 +111,10 @@ def animate_meter_change(meter, target_value, step_duration):
             meter.configure(amountused=int(target_value))
 
     # Démarre l'animation
+    # slider.config(state="disabled")
     update_step(0)
+    # slider.config(state="normal")
+
 
 
 
