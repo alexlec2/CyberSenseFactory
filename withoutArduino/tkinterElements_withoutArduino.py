@@ -1,6 +1,6 @@
-import ttkbootstrap as ttk
+from ttkbootstrap import Scale, Menubutton, Meter, Button
 from tkinter import IntVar
-from tkinter import Button, Label, Frame, Menu, Label
+from tkinter import Label, Frame, Menu, Label
 from PIL import Image, ImageTk  
 Image.CUBIC = Image.BICUBIC
 import json, random
@@ -163,7 +163,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     button_aiguillage_1 = Button(
         section1, image=img_position_1,
         command=lambda: bouton_clicked(scada_frame, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep),
-        takefocus=True
+        takefocus=True, bootstyle="success-link"
     )
     button_aiguillage_1.grid(row=1, column=0)
     label_aiguillage_1 = Label(section1, text="Aiguillage 1", font=("Arial", 14))
@@ -172,7 +172,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
     button_aiguillage_2 = Button(
         section1, image=img_position_3,
         command=lambda: bouton_clicked(scada_frame, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep),
-        takefocus=True
+        takefocus=True, bootstyle="success-link"
     )
     button_aiguillage_2.grid(row=1, column=2)
     label_aiguillage_2 = Label(section1, text="Aiguillage 2", font=("Arial", 14))
@@ -180,7 +180,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
 
     # Slider vertical et label pour la vitesse
     frame_slider = section1
-    vitesse_slider = ttk.Scale(
+    vitesse_slider = Scale(
         frame_slider, from_=1, to=-1, value=0, length=200, orient="vertical",
         command=lambda val: update_vitesse(vitesse_slider, slider_value_label, relays, meters),  # Mise à jour dynamique
         takefocus=True
@@ -231,7 +231,7 @@ def create_scada_frames(scada_frame, relays, margin, time_sleep):
 
     meters = []  # Liste pour les meters, mise à jour avec le slider
     for i in range(3):
-        meter = ttk.Meter(
+        meter = Meter(
             section2, metersize=275, amounttotal=meter_max_value[i], amountused=meter_score_default[i], 
             subtext=meter_text[i], subtextfont="-size 20", textright=meter_text_right[i],
             bootstyle=meter_styles[i], 
@@ -283,7 +283,7 @@ def create_config_frame(config_frame, relays, DB_PATH, board):
         widget_frame.grid(row=row, column=col, padx=10, pady=50, sticky="n")
 
         # Ajouter le Menubutton dans la frame
-        mb = ttk.Menubutton(widget_frame, text=option, bootstyle=styles[index])
+        mb = Menubutton(widget_frame, text=option, bootstyle=styles[index])
         mb.pack()
 
         # Ajouter le Label juste en dessous dans la même frame
@@ -291,7 +291,7 @@ def create_config_frame(config_frame, relays, DB_PATH, board):
         label.pack()
 
         # Ajouter un bouton d'action stylisé en dessous du Label
-        action_button = ttk.Button(
+        action_button = Button(
             widget_frame,
             text=f"Test Relai {default_values[index]}",
             bootstyle=styles[index],

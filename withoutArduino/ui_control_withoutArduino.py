@@ -1,5 +1,4 @@
 from tkinter import Tk
-from ttkbootstrap.constants import *
 from tkinterElements_withoutArduino import create_scada_frames, create_config_frame
 from tkinter import Frame, Button
 import json
