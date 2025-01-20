@@ -79,30 +79,44 @@ def update_vitesse(board, slider, slider_value_label, relays, meters):
         return
 
     # Lancement des mises à jour progressives
-    animate_meter_change(meter_vitesse, target_vitesse, duration=1000)
-    animate_meter_change(meter_consommation, target_consommation, duration=500)
+    animate_meter_change(meter_vitesse, target_vitesse, slider, step_duration=30)
+    animate_meter_change(meter_consommation, target_consommation, slider, step_duration=20)
 
 
-def animate_meter_change(meter, target_value, duration=100):
+def animate_meter_change(meter, target_value, slider, step_duration):
     """
-    Mise à jour progressive d'un meter vers une valeur cible sur une durée définie.
+    Mise à jour progressive d'un meter vers une valeur cible en 1 seconde.
     :param meter: Meter à mettre à jour.
     :param target_value: Valeur cible à atteindre.
-    :param duration: Durée totale de l'animation en millisecondes.
     """
+    # Valeur actuelle du meter
     start_value = meter["amountused"]
-    step_count = 30  # Nombre d'étapes pour l'animation
-    step_duration = duration // step_count
+
+    
+    # Nombre d'étapes fixes et calcul du changement par étape
+    step_count = 15
     step_size = (target_value - start_value) / step_count
+    # step_duration = 33  # 1000ms / 30 steps ≈ 33ms par étape
 
     def update_step(current_step):
+        # Calcul de la nouvelle valeur du meter pour l'étape actuelle
         new_value = start_value + step_size * current_step
-        meter.configure(amountused=int(new_value))  # Mise à jour du meter
+
+        # Arrêter l'animation lorsque nous atteignons ou dépassons la valeur cible
         if current_step < step_count:
+            meter.configure(amountused=int(new_value))
             meter.after(step_duration, update_step, current_step + 1)
+        else:
+            # Assurez-vous que la valeur cible est atteinte
+            meter.configure(amountused=int(target_value))
 
     # Démarre l'animation
+    # slider.config(state="disabled")
     update_step(0)
+    # slider.config(state="normal")
+
+
+
 
 
 def bouton_clicked(board, button, relays, images, state, time_sleep):
@@ -154,7 +168,7 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     button_aiguillage_1 = Button(
         section1, image=img_position_1,
         command=lambda: bouton_clicked(board, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep),
-        takefocus=True, state="disabled", bootstyle="success-link"
+        takefocus=True, state="normal", bootstyle="success-link"
     )
     button_aiguillage_1.grid(row=1, column=0)
     label_aiguillage_1 = Label(section1, text="Aiguillage 1", font=("Arial", 14))
@@ -163,7 +177,7 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     button_aiguillage_2 = Button(
         section1, image=img_position_3,
         command=lambda: bouton_clicked(board, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep),
-        takefocus=True, state="disabled", bootstyle="success-link"
+        takefocus=True, state="normal", bootstyle="success-link"
     )
     button_aiguillage_2.grid(row=1, column=2)
     label_aiguillage_2 = Label(section1, text="Aiguillage 2", font=("Arial", 14))
@@ -174,7 +188,7 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     vitesse_slider = Scale(
         frame_slider, from_=1, to=-1, value=0, length=200, orient="vertical",
         command=lambda val: update_vitesse(board, vitesse_slider, slider_value_label, relays, meters),  # Mise à jour dynamique
-        takefocus=True, state="disabled"
+        takefocus=True, state="normal"
     )
     vitesse_slider.grid(row=1, column=1)
 

@@ -61,6 +61,12 @@ def create_ui():
     root.rowconfigure(2, weight=1)
     root.columnconfigure(0, weight=1, minsize=800)  # Limite de la largeur maximale
 
+    
+    # Tentative de connexion
+    name_arduino = "UNO WiFi R4"
+    board = connect_to_arduino(name_arduino)
+    init_relay_output(board, relays)
+    
     # Marges et padding
     margin = 10
 
@@ -70,6 +76,7 @@ def create_ui():
 
     # Appel de la fonction pour créer les frames
     ui_elements, status_label = create_scada_frames(board, scada_frame, relays, margin, time_sleep)
+    status_label.config(text="Connecté à l'Arduino.", foreground="green")
 
     # Frame pour la page avec les MenuButton
     config_frame = Frame(root, bg="white")
@@ -86,15 +93,12 @@ def create_ui():
         width=2,  # Correspond à 20 pixels environ pour la largeur en mode "grid"
         height=1,  # Pour un aspect carré
         command=lambda: toggle_view(scada_frame, config_frame),
-        state="disabled"
+        state="normal"
     )
     switch_frame_button.place(relx=1, rely=0, x=-30, y=10, anchor="ne")
     ui_elements.append(switch_frame_button)
     
     config_frame.pack_forget()
-
-    # Tentative de connexion
-    root.after(100, lambda: try_connecting(status_label, ui_elements, root, switch_frame_button))
 
     # Lancement de l'application
     root.mainloop()
