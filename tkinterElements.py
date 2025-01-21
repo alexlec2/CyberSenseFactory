@@ -117,11 +117,11 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     status_label = Label(section1, text="Tentative de connexion à l'Arduino...", font=("Arial", 18), fg="blue")
     status_label.grid(row=0, column=0, columnspan=3, pady=25)
     
-    max_height = 250
-    img_position_1 = resize_image("images/position_1.png", max_height)
-    img_position_2 = resize_image("images/position_2.png", max_height)
-    img_position_3 = resize_image("images/position_3.png", max_height)
-    img_position_4 = resize_image("images/position_4.png", max_height)
+    img_position_1 = ImageTk.PhotoImage(Image.open(resource_path("images/position_1.png")))
+    img_position_2 = ImageTk.PhotoImage(Image.open(resource_path("images/position_2.png")))
+    img_position_3 = ImageTk.PhotoImage(Image.open(resource_path("images/position_3.png")))
+    img_position_4 = ImageTk.PhotoImage(Image.open(resource_path("images/position_4.png")))
+
 
     images_list = [img_position_1, img_position_2]
     images_list2 = [img_position_3, img_position_4]
@@ -266,12 +266,3 @@ def create_config_frame(config_frame, relays, board):
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
-
-def resize_image(file_path, max_height):
-    image = Image.open(resource_path(file_path))
-    width, height = image.size
-    if height > max_height:
-        new_width = int(max_height * width / height)
-        image = image.resize((new_width+20, max_height), Image.Resampling.LANCZOS)
-
-    return ImageTk.PhotoImage(image)
