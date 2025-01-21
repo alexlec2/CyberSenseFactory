@@ -1,25 +1,24 @@
 from tkinter import Tk
 from tkinterElements import create_scada_frames, create_config_frame
 from tkinter import Frame, Button
-import json
 from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
 
 # Initialisation
 DB_PATH = "db/relays.txt"
 time_sleep = 0.5  # Durée d'activation du relais (en secondes)
 board = None
-
-# Chargement des relais depuis le fichier
-def load_relays(file_path):
-    try:
-        with open(file_path, "r") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        # Si le fichier n'existe pas ou est corrompu, utiliser une valeur par défaut
-        return [[13, 12], [8, 7], [4, 2]]
+relays = [[13, 12], [8, 7], [4, 2]]
+# # Chargement des relais depuis le fichier
+# def load_relays(file_path):
+#     try:
+#         with open(file_path, "r") as file:
+#             return json.load(file)
+#     except (FileNotFoundError, json.JSONDecodeError):
+#         # Si le fichier n'existe pas ou est corrompu, utiliser une valeur par défaut
+#         return [[13, 12], [8, 7], [4, 2]]
 
 # Charger les relais depuis le fichier
-relays = load_relays(DB_PATH)
+# relays = load_relays(DB_PATH)
 
 def toggle_view(scada_frame, config_frame):
     """Permet de basculer entre la page de base et la page des MenuButton."""
@@ -105,6 +104,6 @@ def create_ui():
 
 # Exécution principale
 if __name__ == "__main__":
-    print("Interface prête.")
+    #print("Interface prête.")
     create_ui()
     disconnect_from_arduino(board)

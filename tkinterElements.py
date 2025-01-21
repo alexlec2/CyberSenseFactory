@@ -3,7 +3,7 @@ from tkinter import IntVar
 from tkinter import Label, Frame, Menu, Label
 from PIL import Image, ImageTk  
 Image.CUBIC = Image.BICUBIC
-import json, random, time
+import random, time
 
 import sys, os
 from controlAiguillage import activate_relay
@@ -46,20 +46,20 @@ def update_vitesse(board, slider, slider_value_label, relays, meters):
     # Valeurs cibles pour la vitesse et la consommation
     if vitesse == 10 and speed_status != 10:
         board.digital[relays[2][1]].write(0)
-        print(f"Activation du relais {relays[2][1]}.")
+        #print(f"Activation du relais {relays[2][1]}.")
         board.digital[relays[2][0]].write(1)
-        print(f"Le relais {relays[2][0]} est à 0.")
-        print("Le train avance")
+        #print(f"Le relais {relays[2][0]} est à 0.")
+        #print("Le train avance")
         speed_status = 10
         target_vitesse = random.randint(250, 300)
         target_consommation = random.randint(800, 1000)
 
     elif vitesse == -10 and speed_status != -10:
         board.digital[relays[2][0]].write(0)
-        print(f"Activation du relais {relays[2][0]}.")
+        #print(f"Activation du relais {relays[2][0]}.")
         board.digital[relays[2][1]].write(1)
-        print(f"Le relai {relays[2][1]} est à 0.")
-        print("Le train recule")
+        #print(f"Le relai {relays[2][1]} est à 0.")
+        #print("Le train recule")
         speed_status = -10
         target_vitesse = random.randint(250, 300)
         target_consommation = random.randint(800, 1000)
@@ -67,9 +67,9 @@ def update_vitesse(board, slider, slider_value_label, relays, meters):
     elif vitesse == 0 and speed_status != 0:
         board.digital[relays[2][1]].write(0)
         board.digital[relays[2][0]].write(0)
-        print(f"Le relais {relays[2][0]} est à 0.")
-        print(f"Le relais {relays[2][1]} est à 0.")
-        print("Le train est à l'arrêt")
+        #print(f"Le relais {relays[2][0]} est à 0.")
+        #print(f"Le relais {relays[2][1]} est à 0.")
+        #print("Le train est à l'arrêt")
         speed_status = 0
         target_vitesse = 0
         target_consommation = random.randint(100, 400)
@@ -129,7 +129,7 @@ def bouton_clicked(board, button, relays, images, state, time_sleep):
     # Active le relais correspondant
     relay_to_activate = relays[state["relay"]]
     activate_relay(board, relay_to_activate, time_sleep)
-    print(f"Relais activé : {relay_to_activate}")
+    #print(f"Relais activé : {relay_to_activate}")
 
     # Alterne entre les deux relais
     state["relay"] = 1 - state["relay"]
@@ -238,23 +238,23 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
 
 
 # Sauvegarde des relais dans le fichier
-def save_relays(file_path, relays):
-    with open(file_path, "w") as file:
-        json.dump(relays, file)
+# def save_relays(file_path, relays):
+#     with open(file_path, "w") as file:
+#         json.dump(relays, file)
 
 def update_relays(index, new_value, relays, DB_PATH):
     """Met à jour la variable globale relays et enregistre les changements dans un fichier."""
     row, col = divmod(index, 2)
     relays[row][col] = new_value
-    save_relays(DB_PATH, relays)  # Sauvegarder la nouvelle valeur dans le fichier
-    print(f"Relays updated: {relays}")  # Debug : Affiche les relais mis à jour
+    # save_relays(DB_PATH, relays)  # Sauvegarder la nouvelle valeur dans le fichier
+    #print(f"Relays updated: {relays}")  # Debug : Affiche les relais mis à jour
 
 def activer_relai(board, var):
-    print(f"Relai {var} a été activé.")
+    #print(f"Relai {var} a été activé.")
     board.digital[var].write(1)
     time.sleep(1)
     board.digital[var].write(0)
-    print(f"Relai {var} a été activé.")
+    #print(f"Relai {var} a été activé.")
 
 def create_config_frame(config_frame, relays, DB_PATH, board):
     """

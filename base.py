@@ -5,20 +5,20 @@ def connect_to_arduino(name):
     try:
         # port = find_arduino(name)
         port = Arduino.AUTODETECT
-        print(f"Connexion en cours avec l'Arduino sur le port {port}...")
+        #print(f"Connexion en cours avec l'Arduino sur le port {port}...")
         board = Arduino(port)
-        print(f"Connecté avec succès à l'Arduino {port}.\n")
+        #print(f"Connecté avec succès à l'Arduino {port}.\n")
         return board
     except IOError as e:
-        print(e)
+        #print(e)
         return None
 
 def disconnect_from_arduino(board):
     """Ferme proprement la connexion à l'Arduino."""
     if board:
-        print("Déconnexion de l'Arduino...")
+        #print("Déconnexion de l'Arduino...")
         board.exit()
-        print("Arduino déconnecté.\n")
+        #print("Arduino déconnecté.\n")
 
 
 def init_relay_output(board, relays):
