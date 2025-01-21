@@ -16,4 +16,7 @@ def init_relay_output(board, relays):
     for relay in relays:
         for output in relay:
             board.digital[output].mode = 1
-            board.digital[output].write(0)
+            if output == 4 or output == 2:
+                board.digital[output].write(1)
+            else:
+                board.digital[output].write(0)

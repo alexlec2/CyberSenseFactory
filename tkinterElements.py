@@ -12,9 +12,14 @@ current_cycle_index = 0
 current_cycle_index_old = -1
 
 def activate_relay(board, relay_pin, time_sleep):
-    board.digital[relay_pin].write(1)
-    time.sleep(time_sleep)
-    board.digital[relay_pin].write(0)
+    if relay_pin == 4 or relay_pin == 2:
+        board.digital[relay_pin].write(0)
+        time.sleep(time_sleep)
+        board.digital[relay_pin].write(1)
+    else:
+        board.digital[relay_pin].write(1)
+        time.sleep(time_sleep)
+        board.digital[relay_pin].write(0)
 
 def handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, current_cycle_index, current_cycle_index_old):
     """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
@@ -202,9 +207,14 @@ def update_relays(index, new_value, relays):
     relays[row][col] = new_value
 
 def activer_relai(board, var):
-    board.digital[var].write(1)
-    time.sleep(1)
-    board.digital[var].write(0)
+    if var == 4 or var == 2:
+        board.digital[var].write(0)
+        time.sleep(1)
+        board.digital[var].write(1)
+    else:
+        board.digital[var].write(1)
+        time.sleep(1)
+        board.digital[var].write(0)
 
 def create_config_frame(config_frame, relays, board):
 
