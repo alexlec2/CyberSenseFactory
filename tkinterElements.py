@@ -262,7 +262,7 @@ def create_config_frame(config_frame, relays, board):
 
             return update_label_and_button
 
-        for value in [13, 12, 8, 7, 4, 2]:
+        for value in [13, 12, 4, 2, 8, 7]:
             menu.add_radiobutton(
                 label=str(value),
                 variable=default_value,

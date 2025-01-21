@@ -5,7 +5,7 @@ from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
 
 time_sleep = 0.5
 board = None
-relays = [[13, 12], [8, 7], [4, 2]]
+relays = [[13, 12], [4, 2], [8, 7]]
 
 def toggle_view(scada_frame, config_frame):
 
