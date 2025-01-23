@@ -3,7 +3,7 @@ from tkinterElements import create_scada_frames, create_config_frame
 from tkinter import Frame, Button
 from base import connect_to_arduino, disconnect_from_arduino, init_relay_output
 
-time_sleep = 0.5
+time_sleep = 1
 board = None
 relays = [[8, 7], [4, 2], [13, 12]]
 
@@ -62,3 +62,4 @@ def create_ui():
 if __name__ == "__main__":
     create_ui()
     disconnect_from_arduino(board)
+

@@ -97,7 +97,16 @@ def animate_meter_change(meter, target_value, slider, step_duration):
     update_step(0)
 
 
-
+def light_change(board, light_button, relay, images, state):
+    new_state = 1 - state["image"]
+    light_button.config(image=images[new_state])
+    state["image"] = new_state
+    if state["state"] == 0:
+        board.digital[relay].write(1)
+        state["state"] = 1 
+    else :
+        board.digital[relay].write(0)
+        state["state"] = 0
 
 
 def bouton_clicked(board, button, relays, images, state, time_sleep):
@@ -109,7 +118,7 @@ def bouton_clicked(board, button, relays, images, state, time_sleep):
     state["relay"] = 1 - state["relay"]
 
 def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
-    global current_cycle_index, current_cycle_index_old
+    global current_cycle_index, current_cycle_index_old, state_light
 
     section1 = Frame(scada_frame, bg="white", height=320, width=780)
     section1.grid(row=0, column=0, padx=margin, pady=margin)
@@ -118,9 +127,24 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     section1.rowconfigure(0, weight=9)
     section1.rowconfigure(1, weight=1)
     section1.rowconfigure(2, weight=1)
+    section1.rowconfigure(3, weight=1)
 
     status_label = Label(section1, text="Tentative de connexion à l'Arduino...", font=("Arial", 18), fg="blue")
     status_label.grid(row=0, column=0, columnspan=3, pady=25)
+
+    img_light_off = ImageTk.PhotoImage(Image.open(resource_path("images/light_off.jpg")))
+    img_light_on = ImageTk.PhotoImage(Image.open(resource_path("images/light_on.jpg")))
+    images_light = [img_light_off, img_light_on]
+    state_light = {"image": 0, "state": 0}
+
+    light_button = Button(
+        section1, image=img_light_off,
+        command=lambda: light_change(board, light_button, 3, images_light, state_light),
+        takefocus=True, state="normal", bootstyle="success-link"
+    )
+    light_button.grid(row=3, column=0, columnspan=3, pady=25)
+    light_button.bind('<Return>', lambda event: light_change(board, light_button, 3, images_light, state_light))  # Touche Entrée sur bouton2
+
     
     img_position_1 = ImageTk.PhotoImage(Image.open(resource_path("images/position_1.png")))
     img_position_2 = ImageTk.PhotoImage(Image.open(resource_path("images/position_2.png")))

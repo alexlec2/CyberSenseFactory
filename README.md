@@ -153,3 +153,5 @@ pyinstaller --onedir --add-data "images/position_1.png:images/" --add-data "imag
 
 pyinstaller --onedir --add-data "images/position_1.png:images/" --add-data "images/position_2.png:images/" --add-data "images/position_3.png:images/" --add-data "images/position_4.png:images/" --add-data "db/relays.txt:db/" -w ui_control_withoutArduino.py --name ScadaWithoutArduino --icon images/icon.png --noupx --exclude-module pynput --exclude-module pyserial
 ```
+
+Le train fait le tour lancé en 4.36sec
