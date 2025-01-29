@@ -144,7 +144,7 @@ Relai 2 connecté à l'output 12 de l'arduino et le - de la batterie.
 ## Build exe
 ```bash
 # Windows
-pyinstaller --onedir --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_3.png;images/" --add-data "images/position_4.png;images/" --add-data "db/relays.txt;db/" -w ui_control.py --name Scada --icon images/icon.png --noupx --exclude-module pynput --exclude-module pyserial
+pyinstaller --onedir --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_3.png;images/" --add-data "images/position_4.png;images/" --add-data "images/light_off.jpg;images/" --add-data "images/light_on.jpg;images/" -w ui_control.py --name Scada --icon images/icon.ico --noupx --exclude-module pynput --exclude-module pyserial --noconfirm
 
 pyinstaller --onedir --add-data "images/position_1.png;images/" --add-data "images/position_2.png;images/" --add-data "images/position_3.png;images/" --add-data "images/position_4.png;images/" --add-data "db/relays.txt;db/" -w ui_control_withoutArduino.py --name ScadaWithoutArduino --icon images/icon.png --noupx --exclude-module pynput --exclude-module pyserial
 
