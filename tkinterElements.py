@@ -1,4 +1,4 @@
-from ttkbootstrap import Scale, Menubutton, Meter, Button
+from ttkbootstrap import Scale, Menubutton, Meter, Button, Style
 from tkinter import IntVar
 from tkinter import Label, Frame, Menu, Label
 from PIL import Image, ImageTk  
@@ -82,7 +82,7 @@ def update_vitesse(board, slider, slider_value_label, relays, meters):
 def animate_meter_change(meter, target_value, slider, step_duration):
     start_value = meter["amountused"]
 
-    step_count = 15
+    step_count = 5
     step_size = (target_value - start_value) / step_count
 
     def update_step(current_step):
@@ -97,15 +97,17 @@ def animate_meter_change(meter, target_value, slider, step_duration):
     update_step(0)
 
 
-def light_change(board, light_button, relay, images, state):
+def light_change(board, light_button, relay, images, state, light_button_label):
     new_state = 1 - state["image"]
     light_button.config(image=images[new_state])
     state["image"] = new_state
     if state["state"] == 0:
         board.digital[relay].write(1)
+        light_button_label.config(text=f"Light ON")
         state["state"] = 1 
     else :
         board.digital[relay].write(0)
+        light_button_label.config(text=f"Light OFF")
         state["state"] = 0
 
 
@@ -128,6 +130,7 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     section1.rowconfigure(1, weight=1)
     section1.rowconfigure(2, weight=1)
     section1.rowconfigure(3, weight=1)
+    section1.rowconfigure(4, weight=1)
 
     status_label = Label(section1, text="Tentative de connexion à l'Arduino...", font=("Arial", 18), fg="blue")
     status_label.grid(row=0, column=0, columnspan=3, pady=25)
@@ -139,12 +142,14 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
 
     light_button = Button(
         section1, image=img_light_off,
-        command=lambda: light_change(board, light_button, 3, images_light, state_light),
+        command=lambda: light_change(board, light_button, 3, images_light, state_light, light_button_label),
         takefocus=True, state="normal", bootstyle="success-link"
     )
-    light_button.grid(row=3, column=0, columnspan=3, pady=25)
-    light_button.bind('<Return>', lambda event: light_change(board, light_button, 3, images_light, state_light))  # Touche Entrée sur bouton2
+    light_button.grid(row=3, column=0, columnspan=3, pady=(20, 5))
+    light_button.bind('<Return>', lambda event: light_change(board, light_button, 3, images_light, state_light, light_button_label))  # Touche Entrée sur bouton2
 
+    light_button_label = Label(section1, text="Light OFF", font=("Arial", 14), width=10)
+    light_button_label.grid(row=4, column=1, pady=(0, 20))
     
     img_position_1 = ImageTk.PhotoImage(Image.open(resource_path("images/position_1.png")))
     img_position_2 = ImageTk.PhotoImage(Image.open(resource_path("images/position_2.png")))
@@ -177,12 +182,32 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     label_aiguillage_2.grid(row=2, column=2)
 
     frame_slider = section1
+    # Créer un style personnalisé
+    style = Style()
+
+    # Définir un style pour le Scale vertical
+    style.configure('Vertical.TScale', 
+                troughcolor='black',  # Couleur de la barre verticale
+                sliderlength=40,  # Longueur du curseur
+                sliderrelief='raised',  # Relief du curseur
+                background='lightgrey',  # Couleur de la barre
+                lightcolor='white',  # Ombre claire sur le curseur
+                troughwidth=150,  # Epaisseur de la barre
+                focuscolor='green',  # Couleur du focus autour du slider
+                borderwidth=0,
+                activebackground='black',
+                highlightcolor='black',
+                highlightthickness=2,
+                highlightbackground='black',
+                height=30)  # Hauteur du curseur (si applicable)
+
+    # Créer le slider avec ce style
     vitesse_slider = Scale(
-        frame_slider, from_=1, to=-1, value=0, length=200, orient="vertical",
-        command=lambda val: update_vitesse(board, vitesse_slider, slider_value_label, relays, meters),  # Mise à jour dynamique
-        takefocus=True, state="normal"
+        frame_slider, from_=1, to=-1, value=0, orient="vertical", length=280, 
+        command=lambda val: update_vitesse(board, vitesse_slider, slider_value_label, relays, meters),
+        takefocus=True, state="normal", style='Vertical.TScale'
     )
-    vitesse_slider.grid(row=1, column=1)
+    vitesse_slider.grid(row=1, column=1, padx=100)
 
     slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14), width=10)
     slider_value_label.grid(row=2, column=1, padx=20)
@@ -203,7 +228,7 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     meters = []
     for i in range(3):
         meter = Meter(
-            section2, metersize=200, amounttotal=meter_max_value[i], amountused=meter_score_default[i], 
+            section2, metersize=225, amounttotal=meter_max_value[i], amountused=meter_score_default[i], 
             subtext=meter_text[i], subtextfont="-size 10", textright=meter_text_right[i],
             bootstyle=meter_styles[i], 
             metertype="semi",
