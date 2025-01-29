@@ -21,7 +21,7 @@ def activate_relay(board, relay_pin, time_sleep):
         time.sleep(time_sleep)
         board.digital[relay_pin].write(0)
 
-def handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, current_cycle_index, current_cycle_index_old):
+def handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, current_cycle_index, current_cycle_index_old, meters):
     """Passe à la valeur suivante du cycle vitesse lorsque Enter est pressée."""
 
     if current_cycle_index == 0 and current_cycle_index_old == -1:
@@ -32,7 +32,7 @@ def handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, cu
         new_value = -1
 
     vitesse_slider.set(new_value)
-    update_vitesse(board, vitesse_slider, slider_value_label, relays)
+    update_vitesse(board, vitesse_slider, slider_value_label, relays, meters)
 
 def update_vitesse(board, slider, slider_value_label, relays, meters):
     """
@@ -75,8 +75,8 @@ def update_vitesse(board, slider, slider_value_label, relays, meters):
     else:
         return
 
-    animate_meter_change(meter_vitesse, target_vitesse, slider, step_duration=30)
-    animate_meter_change(meter_consommation, target_consommation, slider, step_duration=20)
+    animate_meter_change(meter_vitesse, target_vitesse, slider, step_duration=100)
+    animate_meter_change(meter_consommation, target_consommation, slider, step_duration=120)
 
 
 def animate_meter_change(meter, target_value, slider, step_duration):
@@ -187,13 +187,6 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
     slider_value_label = Label(frame_slider, text="Vitesse: 0", font=("Arial", 14), width=10)
     slider_value_label.grid(row=2, column=1, padx=20)
 
-    button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(board, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep))  # Touche Entrée sur bouton1
-    button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(board, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep))  # Touche Entrée sur bouton2
-
-    vitesse_slider.bind('<Return>', lambda val: handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, current_cycle_index, current_cycle_index_old))
-
-    button_aiguillage_1.focus_set()
-
     section2 = Frame(scada_frame, bg="white", height=260, width=780)
     section2.grid(row=1, column=0, padx=margin, pady=margin)
 
@@ -202,9 +195,9 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
 
     meter_styles = ["warning", "info", "success"]
     meter_text = ["Consommation", "Capacité", "Vitesse"]
-    meter_score_default = [100, random.randint(3000, 10000), 0]
-    meter_max_value = [1000, 10000, 300]
-    meter_text_right = ["kW/h", "/10000", "km/h"]
+    meter_score_default = [100, random.randint(300, 1500), 0]
+    meter_max_value = [1000, 1500, 300]
+    meter_text_right = ["kW/h", "/1500", "km/h"]
     meter_stripethickness = [10, 0, 2]
 
     meters = []
@@ -221,6 +214,13 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
         meter.grid(row=0, column=i, sticky="nsew", padx=15, pady=5)
         meters.append(meter)
     
+    button_aiguillage_1.bind('<Return>', lambda event: bouton_clicked(board, button_aiguillage_1, relays[0], images_list, state_aiguillage_1, time_sleep))  # Touche Entrée sur bouton1
+    button_aiguillage_2.bind('<Return>', lambda event: bouton_clicked(board, button_aiguillage_2, relays[1], images_list2, state_aiguillage_2, time_sleep))  # Touche Entrée sur bouton2
+
+    vitesse_slider.bind('<Return>', lambda val: handle_enter_on_slider(board, vitesse_slider, slider_value_label, relays, current_cycle_index, current_cycle_index_old, meters))
+
+    button_aiguillage_1.focus_set()
+
     ui_elements = [button_aiguillage_1, button_aiguillage_2, vitesse_slider]
     return ui_elements, status_label
 
