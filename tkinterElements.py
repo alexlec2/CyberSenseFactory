@@ -10,6 +10,7 @@ import sys, os
 speed_status = 0
 current_cycle_index = 0
 current_cycle_index_old = -1
+light_relay = 11
 
 def activate_relay(board, relay_pin, time_sleep):
     if relay_pin == 4 or relay_pin == 2:
@@ -120,7 +121,7 @@ def bouton_clicked(board, button, relays, images, state, time_sleep):
     state["relay"] = 1 - state["relay"]
 
 def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
-    global current_cycle_index, current_cycle_index_old, state_light
+    global current_cycle_index, current_cycle_index_old, state_light, light_relay
 
     section1 = Frame(scada_frame, bg="white", height=320, width=780)
     section1.grid(row=0, column=0, padx=margin, pady=margin)
@@ -142,11 +143,11 @@ def create_scada_frames(board, scada_frame, relays, margin, time_sleep):
 
     light_button = Button(
         section1, image=img_light_off,
-        command=lambda: light_change(board, light_button, 3, images_light, state_light, light_button_label),
+        command=lambda: light_change(board, light_button, light_relay, images_light, state_light, light_button_label),
         takefocus=True, state="normal", bootstyle="success-link"
     )
     light_button.grid(row=3, column=0, columnspan=3, pady=(20, 5))
-    light_button.bind('<Return>', lambda event: light_change(board, light_button, 3, images_light, state_light, light_button_label))  # Touche Entrée sur bouton2
+    light_button.bind('<Return>', lambda event: light_change(board, light_button, light_relay, images_light, state_light, light_button_label))  # Touche Entrée sur bouton2
 
     light_button_label = Label(section1, text="Light OFF", font=("Arial", 14), width=10)
     light_button_label.grid(row=4, column=1, pady=(0, 20))
